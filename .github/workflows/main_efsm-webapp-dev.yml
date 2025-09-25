@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - efsm-webapp-dev
+name: Build and deploy Node.js app to Azure Web App - EFSM-webapp-dev
 
 on:
   push:
@@ -23,25 +23,11 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: npm install and build
-        run: |
-          npm install
-          npm run build
-        env:
-          NEXT_PUBLIC_AZURE_AD_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_AZURE_AD_CLIENT_ID }}
-          NEXT_PUBLIC_AZURE_AD_TENANT_ID: ${{ secrets.NEXT_PUBLIC_AZURE_AD_TENANT_ID }}
-          NEXT_PUBLIC_AZURE_AD_AUTHORITY: ${{ secrets.NEXT_PUBLIC_AZURE_AD_AUTHORITY }}
-          NEXT_PUBLIC_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_REDIRECT_URI }}
-          NEXT_PUBLIC_POST_LOGOUT_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_POST_LOGOUT_REDIRECT_URI }}
-          NEXT_PUBLIC_KNOWN_AUTHORITY: ${{ secrets.NEXT_PUBLIC_KNOWN_AUTHORITY }}
-          NODE_ENV: production
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: .
-          include-hidden-files: true
 
   deploy:
     runs-on: ubuntu-latest
@@ -59,64 +45,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0C57582F39E042C2BBCF4DFAF85C461B }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9C5AFCF37115446D949BCCAC9BE06E04 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_19ACDDAB21154634875E875ACFCDC3CC }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F394749E68604AF0837359A72218D64F }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DF334475E8BD4AF990EE014E4C4FCF75 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_39D71AF96C9B4D3B91D945340FE2C4E4 }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'efsm-webapp-dev'
+          app-name: 'EFSM-webapp-dev'
           slot-name: 'Production'
           package: .
-      
-      - name: 'Set Azure Web App Settings'
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: 'efsm-webapp-dev'
-          slot-name: 'Production'
-          app-settings-json: |
-            [
-              {
-                "name": "NEXT_PUBLIC_AZURE_AD_CLIENT_ID",
-                "value": "${{ secrets.NEXT_PUBLIC_AZURE_AD_CLIENT_ID }}"
-              },
-              {
-                "name": "NEXT_PUBLIC_AZURE_AD_TENANT_ID", 
-                "value": "${{ secrets.NEXT_PUBLIC_AZURE_AD_TENANT_ID }}"
-              },
-              {
-                "name": "NEXT_PUBLIC_AZURE_AD_AUTHORITY", 
-                "value": "${{ secrets.NEXT_PUBLIC_AZURE_AD_AUTHORITY }}"
-              },
-              {
-                "name": "NEXT_PUBLIC_REDIRECT_URI",
-                "value": "${{ secrets.NEXT_PUBLIC_REDIRECT_URI }}"
-              },
-              {
-                "name": "NEXT_PUBLIC_POST_LOGOUT_REDIRECT_URI",
-                "value": "${{ secrets.NEXT_PUBLIC_POST_LOGOUT_REDIRECT_URI }}"
-              },
-              {
-                "name": "NEXT_PUBLIC_KNOWN_AUTHORITY",
-                "value": "${{ secrets.NEXT_PUBLIC_KNOWN_AUTHORITY }}"
-              },
-              {
-                "name": "NODE_ENV",
-                "value": "production"
-              },
-              {
-                "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                "value": "~22"
-              },
-              {
-                "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
-                "value": "false"
-              },
-              {
-                "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                "value": "~22"
-              }
-            ]
           
