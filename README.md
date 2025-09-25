@@ -1,4 +1,4 @@
-# FlWins - React Application with Azure AD Authentication
+# EFSM - React Application with Azure AD Authentication
 
 A modern React application built with Next.js 15 and TypeScript, featuring Microsoft Azure AD authentication for secure login and user management.
 
@@ -27,7 +27,7 @@ Before running the application, you need to configure an Azure AD App Registrati
 1. **Create App Registration**:
    - Go to [Azure Portal](https://portal.azure.com/)
    - Navigate to "Azure Active Directory" > "App registrations" > "New registration"
-   - Enter a name for your application (e.g., "FlWins App")
+   - Enter a name for your application (e.g., "EFSM App")
    - Select "Accounts in this organizational directory only" (single tenant)
    - Set redirect URI to: `http://localhost:3000` (for development)
 
@@ -68,8 +68,8 @@ Before running the application, you need to configure an Azure AD App Registrati
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/likith099/flwins-dev.git
-   cd flwins-dev
+   git clone https://github.com/likith099/efsmod-dev.git
+   cd efsmod-dev
    ```
 
 2. **Install dependencies**:
@@ -81,22 +81,20 @@ Before running the application, you need to configure an Azure AD App Registrati
    - Copy `.env.local.example` to `.env.local`
    - Update the environment variables with your Azure AD configuration:
 
-   **For Your FLWINS B2C Configuration:**
+   **For EFSM Web App Configuration (Current):**
    ```env
-   NEXT_PUBLIC_AZURE_AD_CLIENT_ID=0a37f565-9bea-4bdd-aacf-f0d8f909c096
-   NEXT_PUBLIC_AZURE_AD_AUTHORITY=https://flwins.ciamlogin.com/4cc02933-c81d-4fe9-9f71-850984769f51/v2.0
-   NEXT_PUBLIC_REDIRECT_URI=http://localhost:3001
-   NEXT_PUBLIC_KNOWN_AUTHORITY=flwins.ciamlogin.com
-   NEXT_PUBLIC_AUTHORITY_DOMAIN=flwins.ciamlogin.com
-   NEXT_PUBLIC_SIGN_UP_SIGN_IN_POLICY=B2C_1A_SIGNUP_SIGNIN
+   NEXT_PUBLIC_AZURE_AD_CLIENT_ID=5b914bda-3dd3-478d-8317-4dd124e9bfa5
+   NEXT_PUBLIC_AZURE_AD_AUTHORITY=https://login.microsoftonline.com/d935a45c-566b-4041-bd28-aa64949aae1d
+   NEXT_PUBLIC_REDIRECT_URI=http://localhost:3000
+   NEXT_PUBLIC_POST_LOGOUT_REDIRECT_URI=http://localhost:3000
    ```
 
-   **For Regular Azure AD:**
+   **For Production (Azure App Service):**
    ```env
-   NEXT_PUBLIC_AZURE_AD_CLIENT_ID=your_application_client_id
-   NEXT_PUBLIC_AZURE_AD_AUTHORITY=https://login.microsoftonline.com/your_tenant_id/v2.0
-   NEXT_PUBLIC_REDIRECT_URI=http://localhost:3000
-   NEXT_PUBLIC_KNOWN_AUTHORITY=login.microsoftonline.com
+   NEXT_PUBLIC_AZURE_AD_CLIENT_ID=5b914bda-3dd3-478d-8317-4dd124e9bfa5
+   NEXT_PUBLIC_AZURE_AD_AUTHORITY=https://login.microsoftonline.com/d935a45c-566b-4041-bd28-aa64949aae1d
+   NEXT_PUBLIC_REDIRECT_URI=https://efsm-webapp-dev-ckbzdncfdpd2e4hg.canadacentral-01.azurewebsites.net
+   NEXT_PUBLIC_POST_LOGOUT_REDIRECT_URI=https://efsm-webapp-dev-ckbzdncfdpd2e4hg.canadacentral-01.azurewebsites.net
    ```
 
    **For Azure AD B2C with User Flows:**
@@ -207,4 +205,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For support and questions, please open an issue on the [GitHub repository](https://github.com/likith099/flwins-dev/issues).
+For support and questions, please open an issue on the [GitHub repository](https://github.com/likith099/efsmod-dev/issues).

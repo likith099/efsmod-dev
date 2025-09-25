@@ -18,7 +18,7 @@
 - **Node.js Version**: 22 LTS
 - **TypeScript**: Yes
 - **Styling**: Tailwind CSS
-- **Repository**: https://github.com/likith099/flwins-dev.git
+- **Repository**: https://github.com/likith099/efsmod-dev.git
 
 ## Next Steps for User
 1. Copy `.env.local.example` to `.env.local` and configure your Azure AD settings

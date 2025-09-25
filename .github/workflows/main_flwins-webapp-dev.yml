@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - flwins-webapp-dev
+name: Build and deploy Node.js app to Azure Web App - efsm-webapp-dev
 
 on:
   push:
@@ -67,14 +67,14 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'flwins-webapp-dev'
+          app-name: 'efsm-webapp-dev'
           slot-name: 'Production'
           package: .
       
       - name: 'Set Azure Web App Settings'
         uses: azure/appservice-settings@v1
         with:
-          app-name: 'flwins-webapp-dev'
+          app-name: 'efsm-webapp-dev'
           slot-name: 'Production'
           app-settings-json: |
             [

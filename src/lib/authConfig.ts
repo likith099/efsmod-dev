@@ -1,20 +1,21 @@
 import { Configuration, RedirectRequest } from "@azure/msal-browser";
 
-// MSAL configuration for Azure AD B2C with External ID (Custom Domain)
+// MSAL configuration for Azure AD B2C with EFSM Web App
 const msalConfig: Configuration = {
   auth: {
-    clientId: process.env.NEXT_PUBLIC_AZURE_AD_CLIENT_ID || "0a37f565-9bea-4bdd-aacf-f0d8f909c096", // Your client ID from the URL
-    authority: process.env.NEXT_PUBLIC_AZURE_AD_AUTHORITY || "https://flwins.ciamlogin.com/4cc02933-c81d-4fe9-9f71-850984769f51/v2.0", // Your B2C authority
+    clientId: process.env.NEXT_PUBLIC_AZURE_AD_CLIENT_ID || "5b914bda-3dd3-478d-8317-4dd124e9bfa5",
+    authority: process.env.NEXT_PUBLIC_AZURE_AD_AUTHORITY || "https://efsmod.ciamlogin.com/d935a45c-566b-4041-bd28-aa64949aae1d/v2.0",
     redirectUri: process.env.NEXT_PUBLIC_REDIRECT_URI || 
-      (typeof window !== 'undefined' ? window.location.origin : "http://localhost:3001"), // Redirect to home, then navigate to profile
+      (typeof window !== 'undefined' ? window.location.origin : "http://localhost:3001"),
+    postLogoutRedirectUri: process.env.NEXT_PUBLIC_POST_LOGOUT_REDIRECT_URI ||
+      (typeof window !== 'undefined' ? window.location.origin : "http://localhost:3001"),
     knownAuthorities: [
-      "flwins.ciamlogin.com" // Your B2C custom domain
+      process.env.NEXT_PUBLIC_KNOWN_AUTHORITY || "efsmod.ciamlogin.com"
     ],
-    postLogoutRedirectUri: typeof window !== 'undefined' ? window.location.origin : "http://localhost:3001",
   },
   cache: {
-    cacheLocation: "sessionStorage", // Cache location
-    storeAuthStateInCookie: false, // Set to true for IE11/Edge support
+    cacheLocation: "sessionStorage",
+    storeAuthStateInCookie: false,
   },
   system: {
     loggerOptions: {
@@ -41,36 +42,43 @@ const msalConfig: Configuration = {
   }
 };
 
-// Login request configuration for Azure AD B2C External ID
+// Login request configuration for Azure AD B2C
 export const loginRequest = {
-  scopes: ["openid", "profile", "email"], // Request user profile information
-  prompt: "select_account", // Allow user to select account
+  scopes: ["openid", "profile", "email"],
+  prompt: "select_account",
   redirectUri: process.env.NEXT_PUBLIC_REDIRECT_URI || 
-    (typeof window !== 'undefined' ? window.location.origin : "http://localhost:3001"), // Redirect to home, then navigate to profile
+    (typeof window !== 'undefined' ? window.location.origin : "http://localhost:3001"),
   extraQueryParameters: {
-    response_mode: "query" // Use query mode for B2C compatibility
+    response_mode: "query"
   }
 };
 
-// Configuration for Microsoft Graph API (if needed)
+// Configuration for Microsoft Graph API
 export const graphConfig = {
   graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
 };
 
-// B2C External ID configuration
+// Azure AD B2C External ID configuration
 export const b2cPolicies = {
   names: {
-    signUpSignIn: process.env.NEXT_PUBLIC_SIGN_UP_SIGN_IN_POLICY || "B2C_1A_SIGNUP_SIGNIN", // Your user flow name
+    signUpSignIn: process.env.NEXT_PUBLIC_SIGN_UP_SIGN_IN_POLICY || "B2C_1A_SIGNUP_SIGNIN",
     editProfile: process.env.NEXT_PUBLIC_EDIT_PROFILE_POLICY || "",
   },
   authorities: {
     signUpSignIn: {
-      authority: process.env.NEXT_PUBLIC_AZURE_AD_AUTHORITY || "https://flwins.ciamlogin.com/4cc02933-c81d-4fe9-9f71-850984769f51/v2.0",
+      authority: process.env.NEXT_PUBLIC_AZURE_AD_AUTHORITY || "https://efsmod.ciamlogin.com/d935a45c-566b-4041-bd28-aa64949aae1d/v2.0",
     },
   },
-  authorityDomain: process.env.NEXT_PUBLIC_AUTHORITY_DOMAIN || "flwins.ciamlogin.com",
-  tenantName: "FLWINS",
-  tenantId: "4cc02933-c81d-4fe9-9f71-850984769f51"
+  authorityDomain: process.env.NEXT_PUBLIC_AUTHORITY_DOMAIN || "efsmod.ciamlogin.com",
+  tenantName: "EFSMOD",
+  tenantId: "d935a45c-566b-4041-bd28-aa64949aae1d"
+};
+
+// Azure AD tenant information
+export const tenantConfig = {
+  tenantId: "d935a45c-566b-4041-bd28-aa64949aae1d",
+  clientId: "5b914bda-3dd3-478d-8317-4dd124e9bfa5",
+  objectId: "cbd5c1f4-2e61-4752-87f2-462b3de4727b",
 };
 
 export default msalConfig;

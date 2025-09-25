@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FlWins - Azure AD Authentication",
+  title: "EFSM - Azure AD Authentication",
   description: "React application with Microsoft Azure AD authentication",
 };
 

@@ -152,7 +152,7 @@ export default function ProfilePage() {
                       <div className="flex justify-between border-b pb-2">
                         <span className="font-medium text-gray-600">Tenant ID:</span>
                         <span className="text-gray-900 text-sm font-mono">
-                          FLWINS ({account.tenantId.substring(0, 8)}...)
+                          EFSM ({account.tenantId.substring(0, 8)}...)
                         </span>
                       </div>
                     )}
@@ -177,7 +177,7 @@ export default function ProfilePage() {
                 </h3>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-green-800 font-medium">Successfully authenticated via FLWINS Azure AD</span>
+                  <span className="text-green-800 font-medium">Successfully authenticated via EFSM Azure AD</span>
                 </div>
               </div>
 
