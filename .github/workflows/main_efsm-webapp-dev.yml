@@ -11,8 +11,8 @@ on:
 
 jobs:
   build:
-    # Build on Linux so node_modules match Linux App Service runtime
-    runs-on: ubuntu-latest
+    # Build on Windows so node_modules match Windows App Service runtime
+    runs-on: windows-latest
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: '20.x'
 
       - name: npm install, build, and test
         run: |
@@ -117,15 +117,7 @@ jobs:
               },
               {
                 "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                "value": "~22"
-              },
-              {
-                "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
-                "value": "false"
-              },
-              {
-                "name": "WEBSITE_RUN_FROM_PACKAGE",
-                "value": "1"
+                "value": "~20"
               }
             ]
 
