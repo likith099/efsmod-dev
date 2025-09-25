@@ -10,7 +10,7 @@ git add .
 git commit -m "EFSM Web App with B2C authentication ready for deployment"
 git branch -M main
 git remote add origin https://github.com/likith099/efsmod-dev.git
-git push -u origin main
+
 ```
 
 ### Step 2: Set Up GitHub Secrets
