@@ -85,7 +85,7 @@ jobs:
         with:
           inlineScript: |
             az webapp config set --resource-group efsm-dev --name EFSM-webapp-dev --linux-fx-version "NODE|20-lts"
-            az webapp config set --resource-group efsm-dev --name EFSM-webapp-dev --startup-file "npm start"
+            az webapp config set --resource-group efsm-dev --name EFSM-webapp-dev --startup-file "node server.js"
 
       - name: 'Set Azure Web App Settings'
         uses: azure/appservice-settings@v1
@@ -135,8 +135,7 @@ jobs:
         with:
           inlineScript: |
             az webapp log config --name EFSM-webapp-dev --resource-group efsm-dev \
-              --application-logging true --web-server-logging filesystem \
-              --detailed-error-messages true --failed-request-tracing true
+              --application-logging filesystem --web-server-logging filesystem
             # Tail for 60 seconds to capture startup errors
             timeout 60 az webapp log tail --name EFSM-webapp-dev --resource-group efsm-dev || true
           
