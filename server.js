@@ -3,7 +3,8 @@ const { parse } = require("url");
 const next = require("next");
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
+// On Azure App Service, bind to all interfaces and the provided PORT
+const hostname = dev ? "localhost" : "0.0.0.0";
 const port = process.env.PORT || 3000;
 
 // when using middleware `hostname` and `port` must be provided below
@@ -24,7 +25,7 @@ app.prepare().then(() => {
       res.statusCode = 500;
       res.end("internal server error");
     }
-  }).listen(port, (err) => {
+  }).listen(port, hostname, (err) => {
     if (err) throw err;
     console.log(`> Ready on http://${hostname}:${port}`);
   });
