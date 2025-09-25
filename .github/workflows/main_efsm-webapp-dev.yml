@@ -35,7 +35,8 @@ jobs:
           NEXT_PUBLIC_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_REDIRECT_URI }}
           NEXT_PUBLIC_POST_LOGOUT_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_POST_LOGOUT_REDIRECT_URI }}
           NEXT_PUBLIC_KNOWN_AUTHORITY: ${{ secrets.NEXT_PUBLIC_KNOWN_AUTHORITY }}
-          NODE_ENV: production
+          # Ensure devDependencies are installed for building next.config.ts
+          NPM_CONFIG_PRODUCTION: false
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
