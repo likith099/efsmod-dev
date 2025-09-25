@@ -11,8 +11,8 @@ on:
 
 jobs:
   build:
-    # Build on Windows so node_modules match Windows App Service runtime
-    runs-on: windows-latest
+    # Build on Linux so node_modules match Linux App Service runtime
+    runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -81,6 +81,13 @@ jobs:
           package: .
           startup-command: 'node server.js'
 
+      - name: 'Configure Linux runtime and startup'
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az webapp config set --resource-group efsm-dev --name EFSM-webapp-dev --linux-fx-version "NODE|20-lts"
+            az webapp config set --resource-group efsm-dev --name EFSM-webapp-dev --startup-file "node server.js"
+
       - name: 'Set Azure Web App Settings'
         uses: azure/appservice-settings@v1
         with:
@@ -115,10 +122,6 @@ jobs:
               {
                 "name": "NODE_ENV",
                 "value": "production"
-              },
-              {
-                "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                "value": "~20"
               }
             ]
 
