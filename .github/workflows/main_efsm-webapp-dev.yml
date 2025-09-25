@@ -79,14 +79,13 @@ jobs:
           app-name: 'EFSM-webapp-dev'
           slot-name: 'Production'
           package: .
-          startup-command: 'node server.js'
 
       - name: 'Configure Linux runtime and startup'
         uses: azure/cli@v2
         with:
           inlineScript: |
             az webapp config set --resource-group efsm-dev --name EFSM-webapp-dev --linux-fx-version "NODE|20-lts"
-            az webapp config set --resource-group efsm-dev --name EFSM-webapp-dev --startup-file "node server.js"
+            az webapp config set --resource-group efsm-dev --name EFSM-webapp-dev --startup-file "npm start"
 
       - name: 'Set Azure Web App Settings'
         uses: azure/appservice-settings@v1
@@ -130,4 +129,14 @@ jobs:
         with:
           inlineScript: |
             az webapp restart --name EFSM-webapp-dev --resource-group efsm-dev
+
+      - name: Enable logs and tail startup
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az webapp log config --name EFSM-webapp-dev --resource-group efsm-dev \
+              --application-logging true --web-server-logging filesystem \
+              --detailed-error-messages true --failed-request-tracing true
+            # Tail for 60 seconds to capture startup errors
+            timeout 60 az webapp log tail --name EFSM-webapp-dev --resource-group efsm-dev || true
           
