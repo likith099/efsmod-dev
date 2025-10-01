@@ -18,23 +18,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
+      - name: Setup MSBuild path
+        uses: microsoft/setup-msbuild@v2
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      - name: Restore NuGet packages
+        run: nuget restore aspnet-get-started.sln
+
+      - name: Build ASP.NET MVC Application
+        run: msbuild aspnet-get-started.sln /p:Configuration=Release
+
+      - name: List build output (for debugging)
+        run: |
+          echo "Contents of aspnet-get-started directory:"
+          Get-ChildItem -Path "aspnet-get-started" -Recurse -Name
+          echo ""
+          echo "Contents of aspnet-get-started\bin\Release:"
+          if (Test-Path "aspnet-get-started\bin\Release") { 
+            Get-ChildItem -Path "aspnet-get-started\bin\Release" -Recurse 
+          } else { 
+            echo "Release directory not found" 
+          }
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
-
+          name: aspnet-mvc-app
+          path: aspnet-get-started/
+          retention-days: 1
   deploy:
     runs-on: windows-latest
     needs: build
