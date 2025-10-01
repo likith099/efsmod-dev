@@ -124,6 +124,7 @@
   <Compile Include="Controllers\ProvisionController.cs" />
   <Compile Include="Controllers\SRController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+  <Compile Include="Controllers\DiagController.cs" />
   <Compile Include="Filters\AuthAttributes.cs" />
   <Compile Include="Modules\AzureAuthModule.cs" />
   <Compile Include="App_Code\GraphHelper.cs" />
