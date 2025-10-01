@@ -74,5 +74,5 @@ jobs:
         with:
           app-name: 'efsmod-dev'
           slot-name: 'Production'
-          package: ./aspnet-get-started
+          package: ./aspnet-mvc-app
           
