@@ -1,0 +1,258 @@
+# ASP.NET
+# Build and deploy ASP.NET 4.x projects on a self-hosted Windows agent.
+# Uses MSBuild@1 and ensures the .NET Framework 4.8 Targeting Pack is present.
+
+trigger:
+- none
+
+pool:
+  name: 'FDOE SSO Enterprise ADO Agent Pool'
+
+variables:
+  solution: '**/*.sln'               # Adjust if needed
+  projectPath: 'aspnet-get-started/aspnet-get-started.csproj'
+  buildPlatform: 'Any CPU'         
+  buildConfiguration: 'Release'
+
+stages:
+- stage: PreApprovalGate
+  displayName: 'Approval Gate'
+  jobs:
+    - deployment: Approval
+      environment: dev   # Approval happens here
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - script: echo "Approval granted. Proceeding to deployments."
+              displayName: 'Approval acknowledged'
+
+- stage: Build
+  displayName: 'Build Stage'
+  dependsOn: PreApprovalGate
+  jobs:
+  - job: Build
+    displayName: 'Build Job'
+    steps:
+    - checkout: self
+      clean: true
+
+    # Ensure .NET Framework 4.8 targeting pack is installed (fixes MSB3644)
+    - task: PowerShell@2
+      displayName: 'Ensure .NET Framework 4.8 Targeting Pack'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $ErrorActionPreference = 'Stop'
+
+          $targetingPackPath = "${env:ProgramFiles(x86)}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8"
+          if (Test-Path $targetingPackPath) {
+            Write-Host "Found .NET Framework 4.8 reference assemblies at: $targetingPackPath"
+          }
+          else {
+            Write-Warning ".NET Framework 4.8 Targeting Pack not found. Attempting to add via Visual Studio Installer..."
+
+            $vsInstaller = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+            $vsWhere     = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+            $vsInstallPath = ""
+
+            if (Test-Path $vsWhere) {
+              try {
+                $vsInstallPath = & $vsWhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+                if ($LASTEXITCODE -ne 0) { $vsInstallPath = "" }
+              } catch { $vsInstallPath = "" }
+            }
+
+            if ($vsInstallPath -and (Test-Path $vsInstaller)) {
+              Write-Host "Modifying VS Build Tools at: $vsInstallPath"
+              & $vsInstaller modify --installPath "$vsInstallPath" --quiet --norestart `
+                --add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools `
+                --add Microsoft.Net.Component.4.8.TargetingPack
+              if ($LASTEXITCODE -ne 0) {
+                Write-Warning "VS Installer modify failed (exit $LASTEXITCODE). Will try Dev Pack offline installer."
+              }
+              else {
+                Write-Host "VS Installer modify completed."
+              }
+            } else {
+              Write-Warning "VS Installer/vswhere not found. Skipping to Dev Pack installer route."
+            }
+
+            # Re-check after VS Installer attempt
+            if (-not (Test-Path $targetingPackPath)) {
+              Write-Host "Downloading .NET Framework 4.8 Developer Pack (offline) ..."
+              $devPackUrl  = 'https://go.microsoft.com/fwlink/?linkid=2088517'  # 4.8 Dev Pack offline
+              $installer   = 'ndp48-devpack-enu.exe'
+              Invoke-WebRequest -Uri $devPackUrl -OutFile $installer -UseBasicParsing
+              Write-Host "Installing .NET Framework 4.8 Developer Pack (silent) ..."
+              Start-Process -FilePath ".\${installer}" -ArgumentList '/quiet /norestart' -Wait -NoNewWindow
+            }
+
+            if (Test-Path $targetingPackPath) {
+              Write-Host ".NET Framework 4.8 Targeting Pack is installed."
+            } else {
+              Write-Error "Could not install .NET Framework 4.8 Targeting Pack. MSB3644 will persist."
+            }
+          }
+
+          Write-Host "Installed .NET Framework reference assemblies under:"
+          $frameworkPath = "${env:ProgramFiles(x86)}\Reference Assemblies\Microsoft\Framework\.NETFramework"
+          if (Test-Path $frameworkPath) {
+            Get-ChildItem $frameworkPath -Directory | Select-Object -ExpandProperty Name
+          } else {
+            Write-Warning "Reference Assemblies root not found at expected location."
+          }
+
+    - task: PowerShell@2
+      displayName: 'Install Visual Studio Build Tools 2022 (MSBuild + Web + .NET 4.8)'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $ErrorActionPreference = 'Stop'
+          $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $existingInstallPath = $null
+          if (Test-Path $vsWhere) {
+            try { $existingInstallPath = & $vsWhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath } catch {}
+          }
+
+          if ($existingInstallPath) {
+            Write-Host "VS Build Tools found at: $existingInstallPath. Ensuring workloads..."
+            $vsInstaller = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+            if (Test-Path $vsInstaller) {
+              & $vsInstaller modify --installPath "$existingInstallPath" --quiet --norestart `
+                --add Microsoft.VisualStudio.Workload.MSBuildTools `
+                --add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools `
+                --add Microsoft.VisualStudio.Workload.WebBuildTools `
+                --add Microsoft.Net.Component.4.8.TargetingPack
+              if ($LASTEXITCODE -ne 0) { throw "VS Installer modify failed: $LASTEXITCODE" }
+            }
+          } else {
+            $url = 'https://aka.ms/vs/17/release/vs_BuildTools.exe'
+            $exe = 'vs_BuildTools.exe'
+            Invoke-WebRequest -Uri $url -OutFile $exe -UseBasicParsing
+            Start-Process ".\${exe}" -ArgumentList @(
+              '--quiet','--wait','--norestart',
+              '--add','Microsoft.VisualStudio.Workload.MSBuildTools',
+              '--add','Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools',
+              '--add','Microsoft.VisualStudio.Workload.WebBuildTools',
+              '--add','Microsoft.Net.Component.4.8.TargetingPack'
+            ) -NoNewWindow -Wait
+          }
+          Write-Host "VS Build Tools installation/verification complete."
+    - task: PowerShell@2
+      displayName: 'Install Microsoft Web Deploy 3.6'
+      inputs:
+        targetType: inline
+        script: |
+          $url = "https://download.microsoft.com/download/webdeploy_amd64_en-US.msi"
+          $installer = "WebDeploy.msi"
+
+          Write-Host "Downloading Web Deploy from $url..."
+          Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
+
+          Write-Host "Installing Web Deploy silently..."
+          Start-Process msiexec.exe -ArgumentList "/i `"$PWD\$installer`" /quiet /norestart" -Wait -NoNewWindow
+
+          Write-Host "✅ Web Deploy installed (check under: 'C:\Program Files\IIS\Microsoft Web Deploy V3')."
+    - task: NuGetToolInstaller@1
+      displayName: 'Install NuGet'
+
+    - task: NuGetCommand@2
+      displayName: 'Restore NuGet packages'
+      inputs:
+        restoreSolution: '$(solution)'
+
+    # Validate project path resolves before invoking MSBuild
+    - task: PowerShell@2
+      displayName: 'Validate project path'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $full = Join-Path "$(Build.SourcesDirectory)" "$(projectPath)"
+          Write-Host "Resolved project path: $full"
+          if (-not (Test-Path $full)) { throw "Project file not found at: $full" }
+
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)\Package" /p:Configuration=$(buildConfiguration)'
+        Platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+    
+    - task: PowerShell@2
+      displayName: 'Locate MSDeploy package'
+      inputs:
+        targetType: inline
+        script: |
+          $pkg = Get-ChildItem "$(Build.ArtifactStagingDirectory)\Package" -Filter *.zip -File | Select-Object -First 1
+          if(-not $pkg){ throw "MSDeploy package not found in $(Build.ArtifactStagingDirectory)\Package" }
+          Write-Host "Found package: $($pkg.FullName)"
+          # Optional: show manifest contents
+          Expand-Archive -Path $pkg.FullName -DestinationPath "$(Build.ArtifactStagingDirectory)\_pkgExpanded" -Force
+          Get-ChildItem -Recurse "$(Build.ArtifactStagingDirectory)\_pkgExpanded" | Select-Object -First 40 FullName
+          Write-Host "##vso[task.setvariable variable=MsDeployPackagePath]$($pkg.FullName)"
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish MSDeploy package artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)\Package'
+        ArtifactName: 'MsDeployPackage'
+        publishLocation: 'Container'
+    
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download MSDeploy package'
+      inputs:
+        buildType: current
+        artifact: 'MsDeployPackage'
+        targetPath: '$(Pipeline.Workspace)/pkg'
+
+    - task: PowerShell@2
+      displayName: 'Select package'
+      inputs:
+        targetType: inline
+        script: |
+          $pkg = Get-ChildItem "$(Pipeline.Workspace)/pkg" -Filter *.zip -File | Select-Object -First 1
+          if(-not $pkg){ throw "Package not found in $(Pipeline.Workspace)/pkg" }
+          Write-Host "Using package: $($pkg.FullName)"
+          Write-Host "##vso[task.setvariable variable=MsDeployPackagePath]$($pkg.FullName)"
+
+# Deploy stage to Azure App Service
+- stage: Deploy
+  displayName: 'Deploy to Azure App Service'
+  dependsOn:
+  - Build
+  condition: succeeded()
+  jobs:
+  - job: Deploy
+    displayName: 'Deploy job'
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download MSDeploy package artifact'
+      inputs:
+        buildType: current
+        artifact: 'MsDeployPackage'
+        targetPath: '$(Pipeline.Workspace)/pkg'
+
+    - task: PowerShell@2
+      displayName: 'Resolve MSDeploy package path'
+      inputs:
+        targetType: inline
+        script: |
+          $pkg = Get-ChildItem "$(Pipeline.Workspace)/pkg" -Filter *.zip -File | Select-Object -First 1
+          if(-not $pkg){ throw "No MSDeploy .zip package found in $(Pipeline.Workspace)/pkg" }
+          Write-Host "Using package: $($pkg.FullName)"
+          Write-Host "##vso[task.setvariable variable=MsDeployPackagePath]$($pkg.FullName)"
+    
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'Deploy (webDeploy)'
+      inputs:
+        azureSubscription: 'FLDOE-FTEF-APP-SPA-Dev'
+        appType: webApp
+        WebAppName: 'doe-app-d-eu-fte-001'
+        deployToSlotOrASE: true
+        resourceGroupName: 'doe-rg-ftef-dev-001'
+        package: '$(MsDeployPackagePath)'
+        DeploymentType: webDeploy
+        TakeAppOfflineFlag: true
+        RemoveAdditionalFilesFlag: true
+        AdditionalArguments: '-useChecksum'
