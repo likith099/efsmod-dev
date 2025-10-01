@@ -1,0 +1,25 @@
+@{
+    ViewBag.Title = "Service Request - Start";
+}
+
+<div class="page-header">
+    <h2>@ViewBag.Title</h2>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <p class="lead">Welcome, @(User.Identity.Name ?? "User") — you are signed in.</p>
+    }
+    else
+    {
+        <div class="alert alert-warning">You are not signed in. Please sign in to continue.</div>
+        <p>@Html.ActionLink("Sign In", "Login", "Account", new { returnUrl = Url.Action("Start", "SR") }, new { @class = "btn btn-primary" })</p>
+    }
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p>Continue with your Service Request.</p>
+    <p>
+        @Html.ActionLink("Go to Profile", "Profile", "Account", null, new { @class = "btn btn-default" })
+        @Html.ActionLink("Logout", "Logout", "Account", null, new { @class = "btn btn-danger" })
+    </p>
+}
