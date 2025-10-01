@@ -39,17 +39,25 @@ namespace aspnet_get_started.Controllers
         // GET: Account/Logout
         public ActionResult Logout()
         {
-            // Clear any local authentication
-            if (User.Identity.IsAuthenticated)
+            // Always end session and redirect to home
+            try { Session?.Abandon(); } catch { /* ignore */ }
+
+            var homeUrl = Url.Action("Index", "Home", null, Request?.Url?.Scheme ?? "https");
+
+            // If App Service Authentication is enabled, use its logout endpoint
+            var websiteAuthEnabled = Environment.GetEnvironmentVariable("WEBSITE_AUTH_ENABLED");
+            var isAuthEnabled = !string.IsNullOrEmpty(websiteAuthEnabled) &&
+                                (websiteAuthEnabled.Equals("True", StringComparison.OrdinalIgnoreCase) || websiteAuthEnabled == "1");
+
+            if (isAuthEnabled)
             {
-                // Redirect to Azure AD logout
-                var redirectUrl = Request.Url.GetLeftPart(UriPartial.Authority) + "/.auth/logout?post_logout_redirect_url=" + 
-                                 HttpUtility.UrlEncode(Url.Action("Index", "Home", null, Request.Url.Scheme));
-                
+                var baseUrl = Request?.Url?.GetLeftPart(UriPartial.Authority) ?? string.Empty;
+                var redirectUrl = baseUrl + "/.auth/logout?post_logout_redirect_url=" + HttpUtility.UrlEncode(homeUrl);
                 return Redirect(redirectUrl);
             }
 
-            return RedirectToAction("Index", "Home");
+            // Fallback: just redirect home
+            return Redirect(homeUrl);
         }
 
         // GET: Account/Profile
