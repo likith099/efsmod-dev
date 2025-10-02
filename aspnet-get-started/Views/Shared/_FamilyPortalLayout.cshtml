@@ -3,133 +3,51 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Family Portal</title>
+    <title>@ViewBag.Title - EFSM Portal</title>
     
-    <!-- Bootstrap CSS -->
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <!-- Family Portal CSS -->
     <link href="~/Content/FamilyPortal.css" rel="stylesheet" />
     
-    <!-- jQuery -->
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-    <!-- Bootstrap JS -->
     <script src="~/Scripts/bootstrap.min.js"></script>
 </head>
 <body>
-    <!-- Modern Navigation Header -->
     <nav class="portal-nav">
         <div class="nav-brand">
             <div class="logo">
-                <img src="~/Content/logo.png" alt="EFSM Logo" style="width: 100%; height: 100%; object-fit: contain;" />
+                <img src="~/Content/logo.png" alt="EFSM Logo" />
             </div>
             <div>
-                <div class="brand-text">Family Portal</div>
-                <div class="brand-subtitle">Early Learning Services</div>
+                <div class="brand-text">EFSM</div>
+                <div class="brand-subtitle">Early Family Services Management</div>
             </div>
         </div>
         
-        <!-- Navigation Actions -->
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <a href="@Url.Action("Index", "Home")" class="home-btn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: var(--border-radius); color: var(--text-dark); text-decoration: none; font-weight: 500; transition: var(--transition); font-size: 0.9rem;">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
-                    <path d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
-                </svg>
-                Home
-            </a>
-            
-            <!-- Authentication Buttons -->
-            <div class="auth-buttons">
+        <div class="auth-buttons">
+            <a href="@Url.Action("Index", "Home")" class="auth-btn signin">Home</a>
             @if (ViewBag.IsAuthenticated == true)
             {
-                <span style="color: var(--text-dark); font-size: 1.1rem; margin-right: 12px; font-weight: 500; background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-light);">
-                    Welcome, @(ViewBag.UserName ?? "User")
-                </span>
-                <a href="@Url.Action("Logout", "Home")" class="auth-btn signout">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                        <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                    </svg>
-                    Sign Out
-                </a>
+                <span>Welcome, @(ViewBag.UserName ?? "User")</span>
+                <a href="@Url.Action("Logout", "Home")" class="auth-btn signup">Sign Out</a>
             }
             else
             {
-                <a href="@Url.Action("Login", "Home")" class="auth-btn signin">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
-                        <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                    </svg>
-                    Sign In
-                </a>
-                <a href="@Url.Action("Login", "Home")" class="auth-btn signup">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zM8 9c2.5 0 4.5 1.5 4.5 3.5S10.5 16 8 16s-4.5-1.5-4.5-3.5S5.5 9 8 9z"/>
-                    </svg>
-                    Sign Up
-                </a>
+                <a href="@Url.Action("Login", "Home")" class="auth-btn signup">Sign In</a>
             }
-            </div>
         </div>
     </nav>
     
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="container">
-            <!-- Hero Section -->
-            <div class="hero-section">
-                <div class="welcome-section">
-                    <h1 class="welcome-title">@ViewBag.Title</h1>
-                    <p class="welcome-subtitle">Manage your family services and applications</p>
-                    @if (ViewBag.UserEmail != null)
-                    {
-                        <div class="user-greeting">
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-                            </svg>
-                            Welcome back, @ViewBag.UserEmail
-                        </div>
-                    }
-                </div>
-            </div>
-            
-            <!-- Breadcrumb Navigation -->
-            <div class="breadcrumb-section">
-                <a href="@Url.Action("Index", "Home")">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
-                        <path d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
-                    </svg>
-                    Home
-                </a>
-                <span class="breadcrumb-separator">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-                    </svg>
-                </span>
-                <span class="breadcrumb-current">@ViewBag.Title</span>
-            </div>
-            
-            <!-- Page Content -->
-            @RenderBody()
-        </div>
-        
-        <!-- Footer -->
-        <footer style="background: var(--bg-primary); margin-top: 4rem; padding: 3rem 0; border-top: 1px solid var(--border-light);">
-            <div class="container" style="text-align: center; color: var(--text-medium); font-size: 0.875rem;">
-                <div style="margin-bottom: 1rem;">
-                    <strong>Need Help?</strong> Contact your <a href="#" style="color: var(--primary-color);">early learning coalition</a> for immediate assistance.
-                </div>
-                <div style="margin-bottom: 1rem;">
-                    For the best experience, use <a href="https://www.microsoft.com/en-us/edge" target="_blank" style="color: var(--primary-color);">Microsoft Edge</a> or <a href="https://www.google.com/chrome/" target="_blank" style="color: var(--primary-color);">Google Chrome</a>.
-                </div>
-                <div style="color: var(--text-light); font-size: 0.8rem;">
-                    © 2025 Florida Early Learning Management System. All rights reserved.
-                </div>
-            </div>
-        </footer>
+    <div class="container">
+        @RenderBody()
     </div>
     
-    @RenderSection("scripts", required: false)
+    <footer class="portal-footer">
+        <div>© 2025 Florida Department of Education - Early Family Services Management</div>
+        <div>
+            <a href="#">Privacy Policy</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Contact Support</a>
+        </div>
+    </footer>
 </body>
 </html>

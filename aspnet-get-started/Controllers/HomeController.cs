@@ -50,25 +50,10 @@ namespace aspnet_get_started.Controllers
         }
         public ActionResult Index()
         {
-            return View();
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
-        }
-
-        public ActionResult Diagnostics()
-        {
+            // Set authentication status and user data for the layout
+            ViewBag.IsAuthenticated = IsUserAuthenticated();
+            ViewBag.UserName = GetUserName();
+            
             return View();
         }
 
@@ -89,14 +74,14 @@ namespace aspnet_get_started.Controllers
             
             // Set sample household data - in real implementation, this would come from database/services
             ViewBag.HouseholdId = "0002615634";
-            ViewBag.Parents = ""; // Load from database
+            ViewBag.Parents = "John Doe, Jane Doe"; // Sample data
             ViewBag.OtherMembers = ""; // Load from database
-            ViewBag.ChildrenNeedingCare = ""; // Load from database
-            ViewBag.HouseholdSize = 0; // Calculate from database
+            ViewBag.ChildrenNeedingCare = "Emma Doe (Age 4), Liam Doe (Age 2)"; // Sample data
+            ViewBag.HouseholdSize = 4; // Calculate from database
             
             // Sample counts for stats cards
-            ViewBag.ParentCount = 0;
-            ViewBag.ChildrenCount = 0;
+            ViewBag.ParentCount = 2;
+            ViewBag.ChildrenCount = 2;
             ViewBag.OtherMembersCount = 0;
 
             return View();

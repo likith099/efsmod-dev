@@ -1,300 +1,35 @@
 ﻿@{
     ViewBag.Title = "EFSM - Early Family Services Management";
-    Layout = null; // Use custom layout for better control
+    Layout = "~/Views/Shared/_FamilyPortalLayout.cshtml";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title</title>
-    
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/Content/FamilyPortal.css" rel="stylesheet" />
-    
-    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
-</head>
-<body>
-    <!-- Custom Navigation for Home Page -->
-    <nav class="portal-nav">
-        <div class="nav-brand">
-            <div class="logo">
-                <img src="~/Content/logo.png" alt="EFSM Logo" style="width: 100%; height: 100%; object-fit: contain;" />
-            </div>
-            <div>
-                <div class="brand-text">EFSM</div>
-                <div class="brand-subtitle">Early Family Services Management</div>
-            </div>
-        </div>
-        
-        <div class="auth-buttons">
-            <a href="@Url.Action("FamilyPortal", "Home")" class="auth-btn signin">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
-                    <path d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
-                </svg>
-                Family Portal
-            </a>
-            <a href="@Url.Action("Login", "Home")" class="auth-btn signup">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
-                    <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                </svg>
-                Sign In
-            </a>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="main-content">
-
-<style>
-    /* Enhanced Navigation for Home Page */
-    .portal-nav {
-        padding: 8px 20px !important;
-        min-height: auto !important;
-        height: auto !important;
-    }
-    
-    .portal-nav .logo {
-        height: 50px !important;
-        width: auto !important;
-        max-width: 200px !important;
-        background: none !important;
-        background-color: transparent !important;
-        background-image: none !important;
-        border: none !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 4px;
-    }
-    
-    .portal-nav .logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border: none !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        background: none !important;
-    }
-    
-    .portal-nav .nav-brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    
-    .portal-nav .brand-text {
-        font-size: 1.5rem;
-        font-weight: 700;
-    }
-    
-    .portal-nav .brand-subtitle {
-        font-size: 0.9rem;
-        color: var(--text-light);
-    }
-
-    .home-hero {
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-accent) 100%);
-        padding: 4rem 2rem;
-        border-radius: var(--border-radius-lg);
-        box-shadow: var(--shadow-xl);
-        text-align: center;
-        margin: 2rem 0;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .home-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: var(--gradient-primary);
-    }
-    
-    .home-title {
-        font-family: 'Poppins', sans-serif;
-        font-size: 4rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 1rem;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .home-subtitle {
-        font-size: 1.5rem;
-        color: var(--text-medium);
-        margin-bottom: 2rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .feature-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin: 3rem 0;
-    }
-    
-    .feature-card {
-        background: var(--bg-primary);
-        border-radius: var(--border-radius-lg);
-        padding: 2rem;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-light);
-        transition: var(--transition);
-        text-align: center;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-xl);
-    }
-    
-    .feature-icon {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 1.5rem;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        color: white;
-        margin-bottom: 1.5rem;
-    }
-    
-    .feature-card h3 {
-        font-size: 1.75rem;
-        font-weight: 600;
-        color: var(--text-dark);
-        margin-bottom: 1rem;
-    }
-    
-    .feature-card p {
-        color: var(--text-medium);
-        font-size: 1.2rem;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
-    }
-    
-    @@media (max-width: 768px) {
-        .home-title {
-            font-size: 3rem;
-        }
-        
-        .home-hero {
-            padding: 3rem 1.5rem;
-        }
-        
-        .feature-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-    }
-</style>
-
-<div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-    <div class="home-hero">
-        <h1 class="home-title">EFSM Family Portal</h1>
-        <p class="home-subtitle">
-            Welcome to the Florida Early Learning Management System - Your comprehensive gateway to family services, 
-            child care assistance, and educational programs designed to support your family's journey.
-        </p>
-        <a href="@Url.Action("FamilyPortal", "Home")" class="create-app-btn" style="font-size: 1.3rem; padding: 18px 36px;">
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
-                <path d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
-            </svg>
-            Access Family Portal
-        </a>
-    </div>
-
-    <div class="feature-grid">
-        <div class="feature-card">
-            <div class="feature-icon" style="background: var(--gradient-primary);">
-                <svg width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                    <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
-                    <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-                </svg>
-            </div>
-            <h3>Family Profile Management</h3>
-            <p>
-                Manage your family information, view household details, and access your personalized dashboard 
-                with all your applications and services in one convenient location.
-            </p>
-            <a href="@Url.Action("FamilyPortal", "Home")" class="create-app-btn">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                </svg>
-                View Family Profile
-            </a>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon" style="background: var(--gradient-accent);">
-                <svg width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a2 2 0 0 1-1.789 1.106H7.236a2 2 0 0 1-1.789-1.106L5.224 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.461-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A6 6 0 0 1 2 6zm6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1z"/>
-                </svg>
-            </div>
-            <h3>School Readiness Program</h3>
-            <p>
-                Apply for School Readiness financial assistance to help with child care costs. 
-                Get support for quality early learning programs that prepare your child for success.
-            </p>
-            <a href="@Url.Action("Start", "SR")" class="create-app-btn success">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                </svg>
-                Start Application
-            </a>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon" style="background: var(--gradient-secondary);">
-                <svg width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5V13a1 1 0 0 0 1 1V1.5a.5.5 0 0 1 .5-.5H14a1 1 0 0 0-1-1H1.5zM3.5 2A1.5 1.5 0 0 0 2 3.5v11A1.5 1.5 0 0 0 3.5 16h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 16 9.586V3.5A1.5 1.5 0 0 0 14.5 2h-11zM3 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V9h-4.5A1.5 1.5 0 0 0 9 10.5V15H3.5a.5.5 0 0 1-.5-.5v-11zm7 11.293V10.5a.5.5 0 0 1 .5-.5h4.293L10 14.793z"/>
-                </svg>
-            </div>
-            <h3>VPK Applications</h3>
-            <p>
-                Apply for the Voluntary Prekindergarten Education Program - free prekindergarten education 
-                for eligible 4-year-old children to build a strong foundation for learning.
-            </p>
-            <a href="@Url.Action("FamilyPortal", "Home")" class="create-app-btn warning">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-                </svg>
-                Create VPK Application
-            </a>
-        </div>
-    </div>
+<div class="home-hero">
+    <h1 class="home-title">EFSM Family Portal</h1>
+    <p class="home-subtitle">
+        Welcome to the Early Family Services Management system - Your comprehensive gateway to family services, 
+        child care assistance, and educational programs.
+    </p>
+    <a href="@Url.Action("FamilyPortal", "Home")" class="create-app-btn">
+        Access Family Portal
+    </a>
 </div>
 
-    </div> <!-- Close main-content -->
-    
-    <!-- Footer -->
-    <footer class="portal-footer">
-        <div>© 2025 Florida Department of Education - Early Learning Management System</div>
-        <div>
-            <a href="#">Privacy Policy</a> | 
-            <a href="#">Terms of Service</a> | 
-            <a href="#">Contact Support</a>
-        </div>
-    </footer>
-</body>
-</html>
+<div class="feature-grid">
+    <div class="feature-card">
+        <h3>Family Profile Management</h3>
+        <p>Manage your family information and access your personalized dashboard.</p>
+        <a href="@Url.Action("FamilyPortal", "Home")" class="create-app-btn">View Family Profile</a>
+    </div>
+
+    <div class="feature-card">
+        <h3>School Readiness Program</h3>
+        <p>Apply for School Readiness financial assistance to help with child care costs.</p>
+        <a href="@Url.Action("Start", "SR")" class="create-app-btn success">Start Application</a>
+    </div>
+
+    <div class="feature-card">
+        <h3>VPK Applications</h3>
+        <p>Apply for the Voluntary Prekindergarten Education Program.</p>
+        <a href="@Url.Action("FamilyPortal", "Home")" class="create-app-btn warning">Create VPK Application</a>
+    </div>
+</div>
