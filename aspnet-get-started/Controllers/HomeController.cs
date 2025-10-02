@@ -34,13 +34,22 @@ namespace aspnet_get_started.Controllers
 
         public ActionResult FamilyPortal()
         {
-            // Set sample data - in real implementation, this would come from database/services
-            ViewBag.UserEmail = "user@example.com"; // Get from authentication
+            // Set authentication status and user data
+            ViewBag.IsAuthenticated = User.Identity.IsAuthenticated;
+            ViewBag.UserName = User.Identity.IsAuthenticated ? User.Identity.Name : null;
+            ViewBag.UserEmail = User.Identity.IsAuthenticated ? (User.Identity.Name ?? "user@example.com") : null;
+            
+            // Set sample household data - in real implementation, this would come from database/services
             ViewBag.HouseholdId = "0002615634";
             ViewBag.Parents = ""; // Load from database
             ViewBag.OtherMembers = ""; // Load from database
             ViewBag.ChildrenNeedingCare = ""; // Load from database
             ViewBag.HouseholdSize = 0; // Calculate from database
+            
+            // Sample counts for stats cards
+            ViewBag.ParentCount = 0;
+            ViewBag.ChildrenCount = 0;
+            ViewBag.OtherMembersCount = 0;
 
             return View();
         }

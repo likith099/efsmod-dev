@@ -16,75 +16,111 @@
     <script src="~/Scripts/bootstrap.min.js"></script>
 </head>
 <body>
-    <!-- Navigation Header -->
+    <!-- Modern Navigation Header -->
     <nav class="portal-nav">
-        <div style="display: flex; align-items: center;">
-            <!-- Logo (you can replace with actual logo) -->
-            <div class="logo hidden-xs">
-                <img src="~/Content/images/logo.png" alt="FLWINS Logo" style="height: 40px;" />
+        <div class="nav-brand">
+            <div class="logo">FL</div>
+            <div>
+                <div class="brand-text">Family Portal</div>
+                <div class="brand-subtitle">Early Learning Services</div>
             </div>
-            <div class="logo hidden-sm hidden-md hidden-lg">
-                <img src="~/Content/images/logo-mobile.png" alt="FLWINS Logo" style="height: 30px;" />
-            </div>
-            
-            <!-- Optional environment label -->
-            <label class="hidden-xs" style="font-family: 'High Tower Text'; font-size: 20px; color: #ff0000; margin-left: 10px;">
-                @if(ViewBag.Environment != null) { @ViewBag.Environment }
-            </label>
         </div>
         
-        <!-- Sign Out Button -->
-        <a href="@Url.Action("Logout", "Account")" class="sign-out-btn" aria-label="Sign out from the Family Portal">
-            <span class="glyphicon glyphicon-log-out" style="margin-right: 5px;"></span>
-            <span class="hidden-xs">Sign Out</span>
-            <span class="hidden-sm hidden-md hidden-lg">Sign Out</span>
-        </a>
+        <!-- Authentication Buttons -->
+        <div class="auth-buttons">
+            @if (ViewBag.IsAuthenticated == true)
+            {
+                <span style="color: var(--text-medium); font-size: 0.875rem; margin-right: 12px;">
+                    Welcome, @(ViewBag.UserName ?? "User")
+                </span>
+                <a href="@Url.Action("Profile", "Account")" class="auth-btn signin">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                    </svg>
+                    Profile
+                </a>
+                <a href="@Url.Action("Logout", "Account")" class="auth-btn signout">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                        <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                    </svg>
+                    Sign Out
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("Login", "Account")" class="auth-btn signin">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
+                        <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                    </svg>
+                    Sign In
+                </a>
+                <a href="@Url.Action("Register", "Account")" class="auth-btn signup">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zM8 9c2.5 0 4.5 1.5 4.5 3.5S10.5 16 8 16s-4.5-1.5-4.5-3.5S5.5 9 8 9z"/>
+                    </svg>
+                    Sign Up
+                </a>
+            }
+        </div>
     </nav>
     
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Welcome Section -->
-        <div class="welcome-section">
-            <div class="fontFP">
-                Welcome back, @(ViewBag.UserEmail ?? "User")!
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <div class="welcome-section">
+                    <h1 class="welcome-title">@ViewBag.Title</h1>
+                    <p class="welcome-subtitle">Manage your family services and applications</p>
+                    @if (ViewBag.UserEmail != null)
+                    {
+                        <div class="user-greeting">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                            </svg>
+                            Welcome back, @ViewBag.UserEmail
+                        </div>
+                    }
+                </div>
             </div>
+            
+            <!-- Breadcrumb Navigation -->
+            <div class="breadcrumb-section">
+                <a href="@Url.Action("Index", "Home")">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
+                        <path d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
+                    </svg>
+                    Home
+                </a>
+                <span class="breadcrumb-separator">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </span>
+                <span class="breadcrumb-current">@ViewBag.Title</span>
+            </div>
+            
+            <!-- Page Content -->
+            @RenderBody()
         </div>
-        
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb-section fontFP hidden-xs">
-            <a href="@Url.Action("Index", "Home")" class="fontFP">Home</a>
-            <span class="separator">
-                <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6.19526 12.9727C5.93491 12.7124 5.93491 12.2902 6.19526 12.0299L9.72386 8.5013L6.19526 4.97271C5.93491 4.71236 5.93491 4.29025 6.19526 4.0299C6.45561 3.76955 6.87772 3.76955 7.13807 4.0299L11.1381 8.0299C11.3984 8.29025 11.3984 8.71236 11.1381 8.97271L7.13807 12.9727C6.87772 13.2331 6.45561 13.2331 6.19526 12.9727Z" fill="#4B4B4B"></path>
-                </svg>
-            </span>
-            <span class="fontFP current">@ViewBag.Title</span>
-        </div>
-        
-        <!-- Mobile Breadcrumb -->
-        <div class="breadcrumb-section fontFP hidden-sm hidden-md hidden-lg">
-            <a href="@Url.Action("Index", "Home")" class="fontFP">
-                <span class="glyphicon glyphicon-home"></span>
-                <span style="margin-left:0.5rem">Home</span>
-            </a>
-        </div>
-        
-        <!-- Page Content -->
-        @RenderBody()
         
         <!-- Footer -->
-        <div class="portal-footer">
-            <div>
-                Please contact your <a href="#" target="_blank">early learning coalition</a> for immediate assistance.
+        <footer style="background: var(--bg-primary); margin-top: 4rem; padding: 3rem 0; border-top: 1px solid var(--border-light);">
+            <div class="container" style="text-align: center; color: var(--text-medium); font-size: 0.875rem;">
+                <div style="margin-bottom: 1rem;">
+                    <strong>Need Help?</strong> Contact your <a href="#" style="color: var(--primary-color);">early learning coalition</a> for immediate assistance.
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    For the best experience, use <a href="https://www.microsoft.com/en-us/edge" target="_blank" style="color: var(--primary-color);">Microsoft Edge</a> or <a href="https://www.google.com/chrome/" target="_blank" style="color: var(--primary-color);">Google Chrome</a>.
+                </div>
+                <div style="color: var(--text-light); font-size: 0.8rem;">
+                    © 2025 Florida Early Learning Management System. All rights reserved.
+                </div>
             </div>
-            <div>
-                This site is best viewed with Microsoft Edge. Download the latest version of <a target="_blank" href="https://www.microsoft.com/en-us/edge">Microsoft Edge</a>.
-            </div>
-            <div>
-                If you are using an Apple device (iPad, iPhone, Mac computer, MacBook), please download and use <a target="_blank" href="https://apps.apple.com/us/app/google-chrome/id535886823">Google Chrome</a>,
-                instead of Safari, to complete your application.
-            </div>
-        </div>
+        </footer>
     </div>
     
     @RenderSection("scripts", required: false)
