@@ -1,0 +1,110 @@
+@{
+    ViewBag.Title = "Sign In - FLWINS Family Portal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/FamilyPortal.css" rel="stylesheet" />
+
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 2rem;
+    }
+    
+    .login-card {
+        background: var(--bg-primary);
+        border-radius: var(--border-radius-lg);
+        padding: 3rem;
+        box-shadow: var(--shadow-xl);
+        border: 1px solid var(--border-light);
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+    }
+    
+    .login-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .login-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-medium);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    .azure-login-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 32px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: var(--border-radius);
+        background: #0078d4;
+        color: white;
+        border: none;
+        transition: var(--transition);
+        cursor: pointer;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .azure-login-btn:hover {
+        background: #106ebe;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        text-decoration: none;
+        color: white;
+    }
+    
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-medium);
+        text-decoration: none;
+        margin-top: 2rem;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+    
+    .back-link:hover {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <h1 class="login-title">Welcome Back</h1>
+        <p class="login-subtitle">
+            Sign in with your Microsoft account to access the FLWINS Family Portal and manage your family services and applications.
+        </p>
+        
+        <a href="@Url.Action("Login", "Home")" class="azure-login-btn">
+            <svg width="20" height="20" viewBox="0 0 23 23" fill="currentColor">
+                <path d="M1 1h10v10H1zm11 0h10v10H12zM1 12h10v10H1zm11 0h10v10H12z"/>
+            </svg>
+            Sign in with Microsoft
+        </a>
+        
+        <a href="@Url.Action("Index", "Home")" class="back-link">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            Back to Home
+        </a>
+    </div>
+</div>

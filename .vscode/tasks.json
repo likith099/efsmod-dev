@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Debug ASP.NET Project",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"aspnet-get-started/aspnet-get-started.csproj"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
