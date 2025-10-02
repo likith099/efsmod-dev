@@ -5,6 +5,32 @@
 
 <div class="family-portal-page">
     
+    @* Display welcome message for new accounts *@
+    @if (ViewBag.IsNewAccount == true)
+    {
+        <div class="welcome-notification new-account">
+            <div class="notification-icon">🎉</div>
+            <div class="notification-content">
+                <h4>Welcome to EFSM!</h4>
+                <p>@ViewBag.WelcomeMessage</p>
+            </div>
+            <button class="notification-close" onclick="this.parentElement.style.display='none'">×</button>
+        </div>
+    }
+    
+    @* Display info message for FLWINS users *@
+    @if (ViewBag.FromFLWINS == true)
+    {
+        <div class="welcome-notification flwins-user">
+            <div class="notification-icon">🔗</div>
+            <div class="notification-content">
+                <h4>Connected from FLWINS</h4>
+                <p>You've been automatically signed in from the FLWINS system. Your account information is synchronized between both systems.</p>
+            </div>
+            <button class="notification-close" onclick="this.parentElement.style.display='none'">×</button>
+        </div>
+    }
+    
     <!-- Welcome Banner -->
     <div class="welcome-banner">
         <div class="welcome-content">

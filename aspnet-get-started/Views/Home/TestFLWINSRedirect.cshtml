@@ -1,0 +1,227 @@
+@{
+    ViewBag.Title = "FLWINS Test Redirect - EFSM";
+    Layout = "~/Views/Shared/_FamilyPortalLayout.cshtml";
+}
+
+<div class="test-redirect-page">
+    <div class="test-container">
+        <h1>FLWINS Integration Test</h1>
+        <p>This page simulates how FLWINS would redirect users to EFSM with automatic authentication.</p>
+        
+        <div class="test-scenarios">
+            <h2>Test Scenarios</h2>
+            
+            <div class="scenario-card">
+                <h3>Scenario 1: Existing User</h3>
+                <p>Test automatic login for a user who already has an EFSM account.</p>
+                <a href="@Url.Action("AutoLogin", "Home", new { email = "john.doe@example.com", name = "John Doe", token = "test-token-123" })" 
+                   class="test-button existing">
+                    Test Existing User Login
+                </a>
+            </div>
+            
+            <div class="scenario-card">
+                <h3>Scenario 2: New User</h3>
+                <p>Test automatic account creation and login for a new user.</p>
+                <a href="@Url.Action("AutoLogin", "Home", new { email = "newuser@flwins.org", name = "New User", token = "test-token-456" })" 
+                   class="test-button new">
+                    Test New User Auto-Registration
+                </a>
+            </div>
+            
+            <div class="scenario-card">
+                <h3>Scenario 3: Email Only</h3>
+                <p>Test login with email only (no name provided).</p>
+                <a href="@Url.Action("AutoLogin", "Home", new { email = "emailonly@test.com", token = "test-token-789" })" 
+                   class="test-button email">
+                    Test Email-Only Login
+                </a>
+            </div>
+        </div>
+        
+        <div class="integration-info">
+            <h2>For FLWINS Integration</h2>
+            <p><strong>Production URL:</strong></p>
+            <code>https://efsmod-dev-egcyb2bahcdkamdm.canadacentral-01.azurewebsites.net/Home/AutoLogin</code>
+            
+            <p><strong>Required Parameters:</strong></p>
+            <ul>
+                <li><code>email</code> - User's email address (required)</li>
+                <li><code>name</code> - User's full name (optional)</li>
+                <li><code>token</code> - Authentication token from FLWINS (required for production)</li>
+            </ul>
+            
+            <p><strong>Example URL:</strong></p>
+            <code>https://efsmod-dev-egcyb2bahcdkamdm.canadacentral-01.azurewebsites.net/Home/AutoLogin?email=user@example.com&name=John%20Doe&token=secure-token-here</code>
+        </div>
+        
+        <div class="back-link">
+            <a href="@Url.Action("Index", "Home")">← Back to Home</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.test-redirect-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.test-container {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.test-container h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.test-container > p {
+    font-size: 18px;
+    color: #4b5563;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.test-scenarios {
+    margin-bottom: 50px;
+}
+
+.test-scenarios h2 {
+    font-size: 1.8rem;
+    color: #1f2937;
+    margin-bottom: 25px;
+    border-bottom: 3px solid #f3f4f6;
+    padding-bottom: 10px;
+}
+
+.scenario-card {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border: 1px solid #e5e7eb;
+}
+
+.scenario-card h3 {
+    font-size: 1.3rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.scenario-card p {
+    font-size: 16px;
+    color: #4b5563;
+    margin-bottom: 20px;
+}
+
+.test-button {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.test-button.existing {
+    background: #10b981;
+    color: white;
+}
+
+.test-button.existing:hover {
+    background: #059669;
+    text-decoration: none;
+    color: white;
+}
+
+.test-button.new {
+    background: #3b82f6;
+    color: white;
+}
+
+.test-button.new:hover {
+    background: #2563eb;
+    text-decoration: none;
+    color: white;
+}
+
+.test-button.email {
+    background: #f59e0b;
+    color: white;
+}
+
+.test-button.email:hover {
+    background: #d97706;
+    text-decoration: none;
+    color: white;
+}
+
+.integration-info {
+    background: #f3f4f6;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.integration-info h2 {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 20px;
+}
+
+.integration-info p {
+    font-size: 16px;
+    color: #374151;
+    margin-bottom: 15px;
+}
+
+.integration-info strong {
+    color: #1f2937;
+}
+
+.integration-info code {
+    background: #e5e7eb;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #374151;
+    display: block;
+    margin: 10px 0;
+    word-break: break-all;
+}
+
+.integration-info ul {
+    margin: 15px 0;
+    padding-left: 25px;
+}
+
+.integration-info li {
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #374151;
+}
+
+.back-link {
+    text-align: center;
+}
+
+.back-link a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}
+</style>
