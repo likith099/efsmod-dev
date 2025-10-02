@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<!-- saved from url=(0081)https://familyservices.floridaearlylearning.com/CustomerPortal/AcknowledgeStatute -->
+<html lang="en" class=" js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths" style=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- NOTE: Remove the following line after a fix has been implemented for the IE9 bug with the VPK document upload feature -->
+    <meta http-equiv="X-UA-Compatible" content="IE=10">
+
+    <title>Family Portal: Family Profile</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async="" src="./Family Portal_ Family Profile_files/js"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-Z0N0Y0NDKZ');
+    </script>
+
+    <script src="./Family Portal_ Family Profile_files/headscripts"></script>
+
+    <link href="./Family Portal_ Family Profile_files/css" rel="stylesheet">
+
+    <link href="./Family Portal_ Family Profile_files/CommonPortalStyles" rel="stylesheet">
+
+    <link href="./Family Portal_ Family Profile_files/jQueryDataTablesStyles" rel="stylesheet">
+
+    <script src="./Family Portal_ Family Profile_files/Helpers.js.download"></script>
+    <script src="./Family Portal_ Family Profile_files/jQueryDataTablesScripts"></script>
+
+
+    
+        <script src="./Family Portal_ Family Profile_files/jquery.form.js.download"></script>
+
+    <!-- this JavaScript library is used for inline rendering of PDFs -->
+    
+
+
+    <script type="text/javascript">
+        function noBack() { window.history.forward() }
+        noBack();
+        window.onload = noBack;
+        window.onpageshow = function (evt) { if (evt.persisted) noBack() }
+        window.onunload = function () { void (0) }
+    </script>
+
+    <!-- script to set the file name in our custom file input control  -->
+    <script type="text/javascript">
+
+        $(document).on('change', '.btn-file :file', function () {
+            var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            input.trigger('fileselect', [numFiles, label]);
+        });
+
+        $(document).on('fileselect', '.btn-file :file', function (event, numFiles, label) {
+            var input = $(this).parents('.input-group').find(':text'),
+                log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+            if (input.length) {
+                input.val(log);
+            } else {
+                if (log) alert(log);
+            }
+
+        });
+
+    </script>
+    <style>
+        /*td { border: 0px solid gray; padding: 0 10px 0 10px; }
+        table { margin-bottom:10px; margin-left:auto; margin-right:auto; }*/
+
+        /* make family profile tab responsive */
+        #parentMenuNav a {
+            color: #4B4B4B;
+            font-size: 12px;
+            font-weight: 700;
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+        }
+
+        .btn {
+            box-shadow: none;
+        }
+
+        .modal-content {
+            box-shadow: none;
+            border-radius: 3px;
+        }
+
+        #parentMenuNav>.active>a {
+            border-bottom: 2px solid #01689B;
+            color: #01689B;
+            border-top: 0;
+            border-radius: 0;
+            border-left: 0;
+            border-right: 0;
+        }
+
+        #instructions-alert {
+            border: 1px solid #D2D2D2;
+        }
+
+        #parent-panel {
+            border: 1px solid #D2D2D2;
+        }
+
+        input[type=checkbox]:focus,
+        input[type=radio]:focus {
+            outline: none;
+        }
+
+        .form-values {
+            font-size: 18px;
+            color: #7A7A7A;
+            font-weight: 400;
+            box-shadow: none !important;
+        }
+
+        .fontFP {
+            font-size: 18px !important;
+        }
+
+        .form-control {
+            font-size: 18px;
+        }
+
+        .nextButton {
+            position: absolute;
+            right: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .fw-700 {
+            font-weight: 700 !important;
+        }
+
+        .fw-400 {
+            font-weight: 400 !important;
+        }
+
+        .fontHeader {
+            font-size: 20px !important;
+        }
+
+        input[type="checkbox"] {
+            margin-top: 0;
+            display: inline-flex;
+            width: 16px;
+            height: 16px;
+            align-content: center;
+            justify-content: center;
+            font-size: 2rem;
+            padding: 0.1rem;
+            border: 1px solid #7A7A7A;
+            border-radius: 3px;
+        }
+
+        input[type=radio] {
+            margin-top: 0;
+            display: inline-flex;
+            width: 16px;
+            height: 16px;
+            align-content: center;
+            justify-content: center;
+            font-size: 2rem;
+            padding: 0.1rem;
+            border: 1px solid #7A7A7A;
+            border-radius: 50%;
+        }
+
+        .flexContainer {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .flexible {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .flexibleMargin {
+            margin-left: 0.5rem;
+            margin-right: 2rem;
+        }
+
+        input[type="checkbox"]+label {
+            margin-bottom: 0;
+            margin-right: 2rem;
+            margin-left: 0.5rem;
+        }
+
+        input[type=checkbox]::before {
+            content: "";
+            width: 16px;
+            height: 16px;
+            background-color: #01689B;
+            transform: scale(0);
+            border: 1px solid #01689B;
+        }
+
+        input[type=checkbox]::after {
+            content: '';
+            display: block;
+            width: 12px;
+            height: 9px;
+            border: solid #fff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            position: relative;
+            top: 0px;
+            left: -3px;
+        }
+
+        input[type=radio]:checked {
+            appearance: none;
+            content: "";
+            color: #FFFFFF;
+            -webkit-appearance: none;
+            border: 5px solid #01689B;
+        }
+
+        input[type=checkbox]:checked {
+            appearance: none;
+            -webkit-appearance: none;
+            transform: scale(1);
+            background-color: #01689B;
+            border: 1px solid #01689B;
+        }
+
+        .jcFlex {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .jcSRFlex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .footerStyles {
+                width: 50%;
+                margin: auto;
+            }
+            #myTab,
+            #myTabs {
+                border: none !important;
+            }
+                .xs-flex-cr-container {
+                    display: block;
+                }
+
+            .widthfield {
+                width: 60%;
+            }
+
+            .widthfieldSmall {
+                width: 30%;
+            }
+
+            .panel-border {
+                border: 1px solid #D2D2D2;
+            }
+
+            .panel-heading {
+                padding: 10px 15px;
+            }
+
+            .panel-body {
+                padding: 15px;
+            }
+
+            .form-inline {
+                display: block;
+            }
+
+            .form-flex {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            #infoIcon {
+                display: none;
+            }
+
+        #myTab li a {
+            justify-content:center;
+            padding: 3rem 0.5rem;
+        }
+        }
+
+        @media (max-width: 767px) {
+            .widthfield {
+                width: 100%;
+            }
+            .footerStyles {
+                width: 100%;
+                margin: auto;
+            }
+                .xs-flex-cr-container {
+                    display: flex;
+                    flex-direction: column-reverse;
+                }
+
+            .form-flex {
+                display: block;
+            }
+
+            #infoIcon {
+                display: block;
+            }
+
+            .form-inline {
+                display: inline-block;
+            }
+
+            .widthfieldSmall {
+                width: 100%;
+            }
+
+            .panel-border {
+                border: none !important;
+            }
+
+            .panel-heading {
+                padding: 10px 0;
+            }
+
+            .panel-body {
+                padding: 0;
+            }
+
+            #instructions-alert {
+                border: 1px solid #D2D2D2;
+            }
+
+            .flexible {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .flexibleMargin {
+                margin-left: 1rem;
+            }
+
+            #myTab,
+            #myTabs {
+                border: 1px solid #D2D2d2;
+                border-radius: 3px;
+                padding-bottom: 2px;
+                margin-bottom: 20px;
+            }
+
+        #myTab li {
+            background: #FFFFFF;
+        }
+
+        #myTab li a {
+            background: #FFFFFF;
+            border: none;
+            border-radius: 0;
+            justify-content:left;
+            padding: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        #myTab li h3 {
+            color: #4B4B4B !important;
+        }
+
+        #myTab li.active {
+            background: #FFFFFF;
+            border-bottom: none;
+        }
+
+        #myTab li.active h3 {
+            color: #000000 !important;
+        }
+
+        #myTab li h3 {
+            font-weight: 400;
+            font-size: 12px;
+            color: #4B4B4B;
+            margin: 0;
+        }
+
+        #myTab li.active h3 {
+            font-weight: 700;
+            font-size: 12px;
+            color: #000000;
+            margin: 0;
+        }
+
+
+            .jcFlex {
+                display: flex;
+                justify-content: center;
+            }
+
+            .jcSRFlex {
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .fontFP {
+                font-size: 14px !important;
+            }
+
+            .fontHeader {
+                font-size: 14px !important;
+            }
+
+            #parent-panel {
+                border: none;
+            }
+
+            .form-values {
+                font-size: 14px;
+            }
+
+            .form-control {
+                font-size: 14px;
+            }
+
+            .nav-tabs>li {
+                float: none;
+                
+            }
+
+            .nav-tabs>li.active>a {
+                border: none;
+            }
+
+            .nav>li>a:hover,
+            .nav>li>a:focus,
+            .nav-tabs>li.active>a,
+            .nav-tabs>li.active>a:hover,
+            .nav-tabs>li.active>a:focus {
+                background: none;
+                border: none;
+            }
+        }
+
+        #footer div {
+            margin-bottom: 15px;
+        }
+
+        .field-validation-valid {
+            display: none;
+        }
+
+        .validation-summary-valid {
+            display: none;
+        }
+
+        .field-validation-error {
+            color: red;
+        }
+
+        .validation-summary-errors {
+            color: red;
+        }
+
+        /* New styles for custom file input control see here for more info: http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/ */
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            background: red;
+            cursor: inherit;
+            display: block;
+        }
+
+        input[readonly] {
+            background-color: white !important;
+            cursor: text !important;
+        }
+
+        .panel-title {
+            font-size: x-large;
+        }
+
+        .carousel-control {
+            font-size: 80pt;
+            padding-top: 55pt;
+        }
+
+        #myTab li {
+        
+        }
+
+        #myTabs li.hidden-xs {
+            width: 14.28%;
+        }
+
+        #myTab li #arrowdown,
+        #myTabs li #arrowdown {
+            display: none;
+        }
+
+        #myTab li h3,
+        #myTabs li h3 {
+            font-size: medium;
+        }
+
+        #myTab li.active #arrow,
+        #myTabs li.active #arrow {
+            display: none;
+        }
+
+        #myTab li.active h3,
+        #myTabs li.active h3 {
+            font-weight: bold;
+        }
+
+
+        #myTab li.active #arrowdown,
+        #myTabs li.active #arrowdown {
+            display: block;
+            background: #ffffff;
+        
+        }
+
+        #myTab li a,
+        #myTabs li.hidden-xs a {
+            background: #F8F7F5;
+            border: 1px solid #D2D2D2;
+            border-right: none;
+            border-radius: 0;
+        }
+
+        #myTab li:nth-child(7) a,
+        #myTabs li.hidden-xs:nth-child(7) a {
+            border-right: 1px solid #D2D2D2;
+
+        }
+
+        #myTab li.active a,
+        #myTabs li.hidden-xs.active a {
+            background: #FFFFFF;
+            border-bottom: none;
+        }
+
+        #myTab li h3,
+        #myTabs li.hidden-xs h4 {
+            font-weight: 400;
+            font-size: 12px;
+            color: #4B4B4B;
+            margin: 0;
+        }
+
+        #myTab li.active h3,
+        #myTab li.active h4 {
+            font-weight: 700;
+            font-size: 12px;
+            color: #000000;
+            margin: 0;
+        }
+
+        #myTabs li.hidden-sm {
+            background: #FFFFFF;
+        }
+
+        #myTabs li.hidden-sm a {
+            background: #FFFFFF;
+            border: none;
+            border-radius: 0;
+        }
+
+        #myTabs li.hidden-sm h4 {
+            color: #4B4B4B !important;
+        }
+
+        #myTab li.hidden-sm.active a {
+            background: #FFFFFF;
+            border-bottom: none;
+        }
+
+        #myTabs li.hidden-sm.active h4 {
+            color: #000000 !important;
+        }
+
+        #myTabs li.hidden-sm h4 {
+            font-weight: 400;
+            font-size: 12px;
+            color: #4B4B4B;
+            margin: 0;
+        }
+
+        #myTabs li.hidden-sm.active h4 {
+            font-weight: 700;
+            font-size: 12px;
+            color: #000000;
+            margin: 0;
+        }
+
+        /*
+         *  Indent levels
+         */
+        .indent0 {
+            margin-left: 0px;
+        }
+
+        .indent1 {
+            margin-left: 20px;
+        }
+
+        .indent2 {
+            margin-left: 40px;
+        }
+
+        .indent3 {
+            margin-left: 60px;
+        }
+    </style>
+
+
+
+</head>
+
+<body id="DocumentBody" style="background-color:white; background-repeat:no-repeat; background-size:contain;">
+    <!--
+        Insert Google Website Translator widget into page header, giving users the option to view
+        our website in different languages.
+    -->
+    
+
+    <script type="text/javascript">
+        window.top.scrollTo(0, 0);
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
+
+    
+    <nav style="display:flex;justify-content:space-between;align-items:center;box-shadow: 0px -1px 0px 0px #F1F1F1 inset;background:white;position:fixed;width:100%;z-index:10;padding:2rem;">
+        <img class="hidden-xs" src="./Family Portal_ Family Profile_files/logoNew.png" style="position: relative; padding: 2px 10px 4px 10px; float: left; ">
+        <img class="hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" src="./Family Portal_ Family Profile_files/logoMobile.svg" style="position: relative; padding: 2px 10px 4px 10px; float: left; ">
+        <label class="hidden-xs" style="font-family: &#39;High Tower Text&#39;; font-size: 20px; color: #ff0000; position: relative; float: left;">
+            
+        </label>
+        <label class="hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="font-family: &#39;High Tower Text&#39;; font-size: 14px; color: #ff0000; position: relative; float: left;">
+            
+        </label>
+
+            <a href="https://familyservices.floridaearlylearning.com/SsoAccount/SignOut" aria-label="The link will sign you out from the Family Portal">
+                <button type="button" class="btn btn-default navbar-btn hidden-xs" style="background:#01689B; color:#FFFFFF;display:flex;align-items:center;border:none;box-shadow:none;">
+                    
+                    <span class="glyphicon glyphicon-log-out" style="margin-right: 5px;"></span>
+                    Sign Out
+                </button>
+                <button type="button" class="btn btn-default navbar-btn hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="background:#01689B; color:#FFFFFF;display:flex;align-items:center;border:none;box-shadow:none;">
+                    Sign Out
+                </button>
+                
+            </a>
+    </nav>
+    
+
+    <div id="main" style="padding:65pt 20pt 5pt 20pt; width:100%; display:inline-block; position:relative;">
+        <div style="display:flex; flex-direction: column; position:relative;">
+            <div class="nav navbar-left" style="display:flex;">
+                <div style="font-size: medium; font-weight: bold; padding: 15px 0px 5px 0px;">
+    Welcome back, 0-likith.k099@gmail.com!
+</div>
+
+            </div>
+
+            <!-- Uncomment the following block of code to enable multilingual content -->
+            
+
+        </div>
+        
+
+
+
+<link href="./Family Portal_ Family Profile_files/DevScreeningStyles" rel="stylesheet">
+
+
+
+
+<div class="page-header well well-lg hidden-xs fontFP" style="display:flex;align-items:center;margin: 0 -26px 20px;border-radius:0;border-right: none;border-left:none; box-shadow: none; padding:1rem 3rem;">
+    <a class="fontFP" style="color:#428bca;font-weight:800px;" href="https://familyservices.floridaearlylearning.com/CustomerPortal/ViewFamilyProfile">Home</a>
+    <span style="margin: 8px 10px 0">
+        <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.19526 12.9727C5.93491 12.7124 5.93491 12.2902 6.19526 12.0299L9.72386 8.5013L6.19526 4.97271C5.93491 4.71236 5.93491 4.29025 6.19526 4.0299C6.45561 3.76955 6.87772 3.76955 7.13807 4.0299L11.1381 8.0299C11.3984 8.29025 11.3984 8.71236 11.1381 8.97271L7.13807 12.9727C6.87772 13.2331 6.45561 13.2331 6.19526 12.9727Z" fill="#4B4B4B"></path>
+        </svg>
+    </span>
+    <span class="fontFP" style="color:#4b4b4b;font-weight:800px;">Family
+        Portal</span>
+    <span style="margin: 8px 10px 0">
+        <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.19526 12.9727C5.93491 12.7124 5.93491 12.2902 6.19526 12.0299L9.72386 8.5013L6.19526 4.97271C5.93491 4.71236 5.93491 4.29025 6.19526 4.0299C6.45561 3.76955 6.87772 3.76955 7.13807 4.0299L11.1381 8.0299C11.3984 8.29025 11.3984 8.71236 11.1381 8.97271L7.13807 12.9727C6.87772 13.2331 6.45561 13.2331 6.19526 12.9727Z" fill="#4B4B4B"></path>
+        </svg>
+    </span>
+    <span class="fontFP" style="color:#4b4b4b;font-weight:400;">
+        Family Profile
+    </span>
+</div>
+<div class="page-header well well-lg hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl fontFP" style="display:flex;align-items:center;margin: 0 -26px;border-radius:0;border-right: none;border-left:none; margin-bottom: 1rem; box-shadow: none;padding:1rem 3rem;">
+                <a class="fontFP" style="color:#428bca;font-weight:800px; fontFP" href="https://familyservices.floridaearlylearning.com/CustomerPortal/ViewFamilyProfile">
+                <span class="glyphicon glyphicon-pencil"></span>
+        
+    <span style="margin-left:0.5rem">
+        Home
+    </span></a>
+    </div>
+
+
+
+<!-- Modal dialog to be displayed when we encounter an error. Display via Helpers.ShowErrorDialog(). -->
+<div id="errorDialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalErrorDialog" data-backdrop="static">
+    <style>
+        #errorDialog .modal-header {
+            background-color: #f5f5f5;
+            border: solid rgb(229, 229, 229) 1px;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+
+        #errorDialog .modal-footer {
+            background-color: #f5f5f5;
+            border: solid rgb(229, 229, 229) 1px;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+    </style>
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="modalErrorDialog" class="modal-title">
+                    <span id="errorDialogTitle">ErrorTitle</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <label>Error Summary</label>
+                <p id="errorDialogSummary">
+                    Summary
+                </p>
+                <div id="errorDialogDetailsSection">
+                    <label>Error Details</label>
+                    <p id="errorDialogDetails">
+                        Details
+                    </p>
+                </div>
+                <div id="errorDialogSolutionsSection">
+                    <label>Possible Solutions</label>
+                    <p id="errorDialogSolutions">
+                        Details
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div>
+        <text>
+            
+<style>
+    .overview-panel {
+        box-sizing: border-box;
+        border: 0px;
+        border-radius: 5px;
+        box-shadow: #3575c4 0 0 15px 2px;
+        padding: 10px;
+        margin: 5px 5px 30px 5px;
+    }
+
+    .overview-heading {
+        box-sizing: border-box;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .overview-section-heading {
+        box-sizing: border-box;
+        font-size: 14px;
+        font-weight: bold;
+        color: #3864b2;
+    }
+
+    .overview-section ul {
+        list-style: none;
+        padding: 0 0 0 20px;
+    }
+
+    .overview-section li {
+        margin: 0;
+        margin-left: 20px;
+        text-indent: -20px;
+        word-wrap: break-word;
+    }
+
+    .header-bar-status {
+        box-sizing: border-box;
+        display: inline;
+        color: #3864b2;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: white;
+        border: 1px solid #cccccc;
+        border-radius: 10px;
+        padding: 2px 5px;
+        position: relative;
+        top: -3px;
+    }
+</style>
+<div style="padding: 16px; border: 1px solid #d2d2d2;">
+    <div style="text-align:center;">
+        <div class="fontHeader" style="color:#2D2D2D; background:#F8F7F5;font-weight:700; padding: 10px;">Household at a Glance</div>
+    </div>
+    <div class="overview-heading row" style="margin-top: 1rem;">
+        <div class="col-md-12">
+            <span class="pull-right header-bar-status" style="border: 0;">
+                HH_0002615634
+            </span>
+        </div>
+    </div>
+    <div class="">
+        <table class="display table-hover hidden-xs" style="width: 100%; margin-bottom: 1rem; ">
+        <thead>
+            <tr style="background: #F8F7F5;">
+                <th class="title" style="width: 20%; background: #F8F7F5; font-size: 14px;padding: 8px;">Parents</th>
+                <th class="title" style="width: 30%; background: #F8F7F5; font-size: 14px;padding: 8px;">Other Household Members</th>
+                <th class="title" style="width: 30%; background: #F8F7F5; font-size: 14px;padding: 8px;">Children Needing Care</th>
+                <th class="title" style="width: 20%; background: #F8F7F5; font-size: 14px;padding: 8px;">Total Household Size</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr style="border-bottom: 1px solid #D2D2D2;">
+                <td class="title" style="padding: 16px 8px; width: 20%; background: #FFFFFF; color: #4B4B4B; font-size: 12px;">
+                </td>
+                <td class="title" style="padding: 16px 8px; width: 30%; background: #FFFFFF; color: #4B4B4B; font-size: 12px;">
+                </td>
+                <td class="title" style="padding: 16px 8px; width: 30%; background: #FFFFFF; color: #4B4B4B; font-size: 12px;">
+                </td>
+                <td class="title" style="padding: 16px 8px; width: 20%; text-align: center; background: #FFFFFF; color: #4B4B4B; font-size: 12px;">
+                    0
+                </td>
+                </tr>
+        </tbody>
+        </table>
+
+        
+        <table class="display table-hover hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="width: 100%; margin-bottom: 1rem; ">
+        <thead>
+            <tr style="background: #FFFFFF;">
+                <th class="title" style="font-size: 12px;padding: 8px; background: #FFFFFF;">Parents</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="border-bottom: 1px solid #D2D2D2;">
+                <td class="title" style="padding: 8px; color: #4B4B4B; font-size: 12px; background: #FFFFFF;">
+                </td>
+            </tr>
+        </tbody>
+        </table>
+        <table class="display table-hover hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="width: 100%; margin-bottom: 1rem; ">
+        <thead>
+            <tr style="background: #FFFFFF;">
+                <th class="title" style="font-size: 12px;padding: 8px; background: #FFFFFF;">Other Household Members</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="border-bottom: 1px solid #D2D2D2;">
+                <td class="title" style="padding: 8px; color: #4B4B4B; font-size: 12px; background: #FFFFFF;">
+                </td>
+            </tr>
+        </tbody>
+        </table>
+        <table class="display table-hover hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="width: 100%; margin-bottom: 1rem; ">
+        <thead>
+            <tr style="background: #FFFFFF;">
+                <th class="title" style="font-size: 12px;padding: 8px; background: #FFFFFF;">Children Needing Care</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="border-bottom: 1px solid #D2D2D2;">
+                <td class="title" style="padding: 8px; color: #4B4B4B; font-size: 12px; background: #FFFFFF;">
+                </td>
+            </tr>
+        </tbody>
+        </table>
+        <table class="display table-hover hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="width: 100%; margin-bottom: 3.2rem; ">
+        <thead>
+            <tr style="background: #FFFFFF;">
+                <th class="title" style="font-size: 12px;padding: 8px; background: #FFFFFF;">Total Household Size</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="border-bottom: 1px solid #D2D2D2;">
+                <td class="title" style="padding: 8px; color: #4B4B4B; background: #FFFFFF; font-size: 12px;">
+                    0
+                </td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+</div>
+
+        </text>
+        <div role="tabpanel" id="vpkapplications">
+            <div id="vpkapps-panel" class="col-lg-12" style="padding: 0; padding-top:10pt;">
+                
+
+<style>
+    .title {
+        background-color: darkgrey;
+        font-weight: bolder;
+        font: bold;
+    }
+    .popup {
+        top: 20px;
+        max-height: 95%;
+        width: 795px !important;
+        margin: auto auto !important;
+        overflow-y: auto;
+    }
+
+    .label-warning,
+    .label-default,
+    .label-info,
+    .label-success,
+    .label-danger {
+        padding: 6px 10px; 
+    }
+
+    @media only screen and (max-device-width: 800px) {
+        .popup {
+            width: 90% !important;
+        }
+
+        .tooltip-inner {
+            text-wrap: wrap !important;
+        }
+
+        td .tooltip {
+            top: 606px;
+            left: 0px;
+            width: 100%;
+        }
+    }
+</style>
+<div style="border: 1px solid #d2d2d2; margin-bottom: 1rem;">
+    <div class="panel-heading big" style="padding: 15px;">
+        <h3 class="panel-title text-capitalize">
+            <span data-toggle="tooltip" data-placement="top" style="font-size: 20px; font-weight: 700; color: #0B4C6F;" data-original-title="" title="">VPK Applications</span>      
+        </h3>
+    </div>
+
+        <div class="container-fluid">
+            <div>
+                <p class="" style="font-size: 12px; font-weight: 400; color: #7A7A7A; margin-top: 1rem;">
+                    There are no saved VPK applications associated with this account. Click the <strong>Create a new VPK application</strong> button to create a new VPK application.
+                </p>
+            </div>
+                <span style="display: flex; justify-content: flex-end;">
+                    <a href="https://familyservices.floridaearlylearning.com/CustomerPortal/VPKImportExistingChild" class="btn btn-success btn-lg hidden-xs" style="border: 1px solid #01689B; color: #01689B; border-radius: 3px; box-shadow: none; background: #FFFFFF; display: flex; justify-content: space-between;  align-items: center;width: fit-content; margin-top: 10px; margin-bottom: 1rem;"> 
+                            <span><svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19.5 12.5625V13.4375H12.9375V20H12.0625V13.4375H5.5V12.5625H12.0625V6H12.9375V12.5625H19.5Z" fill="#01689B"></path>
+                            </svg></span>
+                            <span style="margin-left: 12px;text-wrap:wrap; font-size: 14px;">Create a new VPK application</span> </a>
+                        <a href="https://familyservices.floridaearlylearning.com/CustomerPortal/VPKImportExistingChild" class="btn btn-success btn-lg hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="border: 1px solid #01689B; color: #01689B; border-radius: 3px; box-shadow: none; background: #FFFFFF; display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;  margin-top: 10px;"> 
+                            <span><svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19.5 12.5625V13.4375H12.9375V20H12.0625V13.4375H5.5V12.5625H12.0625V6H12.9375V12.5625H19.5Z" fill="#01689B"></path>
+                            </svg></span>
+                            <span style="margin-left: 12px;text-wrap:wrap; font-size: 14px;">Create a new VPK application</span> </a>
+                </span>
+        </div>
+</div>
+
+<!-- this is the modal definition for program year deferrment -->
+<div id="defer-application" class="modal fade in" tabindex="-1" role="dialog" style="z-index: 2001; ">
+    <div class="modal-content popup">
+        <div id="defer-application-container" class="modal-body"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="reenrollmentDialogPanel" style="overflow: anywhere; width: 100VW;" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" style="overflow-wrap: anywhere;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" class="close" aria-hidden="true">
+                    <span aria-hidden="true">× </span>
+                    <span class="hide">Close</span>
+                </button>
+                <h4 class="modal-title"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Reenrollment Verification</h4>
+            </div>
+            <div class="modal-body" style="overflow-wrap: anywhere;">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">For Your Child - <span class="childName"></span></h3>
+                    </div>
+                    <div class="panel-body" style="overflow-wrap: anywhere;">
+                        <div>
+                            Is this child currently attending or previously attended a VPK program?
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="overflow-wrap: anywhere;">
+                <button type="button" class="btn btn-primary" onclick="onReenrollmentYesClick();" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default" onclick="onReenrollmentNoClick();" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reenrollmentYesDialogPanel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" class="close" aria-hidden="true">
+                    <span aria-hidden="true">× </span>
+                    <span class="hide">Close</span>
+                </button>
+                <h4 class="modal-title"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Reenrollment Verification</h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">For Your Child - <span class="childName"></span></h3>
+                        <span class="appId" style="display:none;"></span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="yesMessage">
+                            A child may only reenroll in VPK if they have not completed more than 70 percent of the instructional hours
+                            (378 for school-year or 210 hours for summer) or more than 70 percent of the funding authorized for a child enrolled in VPK SIS.
+                            <br>
+                            <br>
+                            If you need to verify enrollment hours, contact your local
+                            <a target="_blank" href="http://www.floridaearlylearning.com/parents/find_quality_child_care/locate_a_child_care_resource_referral_program/countys_early_learning_coalition.aspx">early learning coalition</a>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary yesMessage" data-dismiss="modal" onclick="CreateReenrollmentAppAndRedirect();">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reenrollmentNoDialogPanel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" class="close" aria-hidden="true">
+                    <span aria-hidden="true">× </span>
+                    <span class="hide">Close</span>
+                </button>
+                <h4 class="modal-title"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Reenrollment Verification</h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">For Your Child - <span class="childName"></span></h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="noMessage">
+                            If this child has never attended a VPK program, contact your local <a target="_blank" href="http://www.floridaearlylearning.com/parents/find_quality_child_care/locate_a_child_care_resource_referral_program/countys_early_learning_coalition.aspx">early learning coalition</a>
+                            to request a new Certificate of Eligibility.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary noMessage" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="appExistDialogPanel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" class="close" aria-hidden="true">
+                    <span aria-hidden="true">× </span>
+                    <span class="hide">Close</span>
+                </button>
+                <h4 class="modal-title"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Reenrollment Application</h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">For Your Child - <span class="childName"></span></h3>
+                    </div>
+                    <div class="panel-body">
+                        <div>
+                            If you already initiated a reenrollment application, please complete the application and submit. 
+                            If you already submitted, please contact your local <a target="_blank" href="http://www.floridaearlylearning.com/parents/find_quality_child_care/locate_a_child_care_resource_referral_program/countys_early_learning_coalition.aspx">early learning coalition</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.defer').click(function (e) {
+            e.preventDefault();
+            var id = $(this).attr('data-id');
+            var yr = $(this).attr('data-year');
+            $.ajax({
+                url: '/CustomerPortal/VPKApplicationDeferment?VPKApplicationId=' + id + '&EligibleStartYear=' + yr,
+                type: 'GET',
+                success: function (data) {
+                    $('#defer-application-container').html(data);
+                    $('#defer-application').modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus);
+                    alert(errorThrown);
+                },
+                global: false,
+                cache: false
+            });
+        });
+        $('.onceVPK').click(function (e) {
+            if ($(this).hasClass('disabled'))
+                return false;
+
+            $(this).attr("disabled", "disabled");
+            $(this).addClass('disabled');
+            return true;
+        });
+        $('.modal-close-button').click(function (e) {
+            $('#defer-application').modal('hide');
+        });
+        $('#defer-application').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+    });
+
+    function onReenrollmentButtonClick(e) {
+        var childName = $(e.target).attr('data-childname');
+        var appId = $(e.target).attr('data-appid');
+        $(".childName").text(childName);
+        $(".appId").text(appId);
+        $("#reenrollmentDialogPanel").modal("show").on("shown.bs.modal", function () {
+            $(this).find(".btn-primary").focus();
+        });
+    }
+
+    function onReenrollmentYesClick() {
+        $("#reenrollmentYesDialogPanel").modal("show").on("shown.bs.modal", function () {
+            $(this).find(".btn-primary").focus();
+        });
+    }
+
+    function onReenrollmentNoClick() {
+        $("#reenrollmentNoDialogPanel").modal("show").on("shown.bs.modal", function () {
+            $(this).find(".btn-primary").focus();
+        });
+    }
+
+    // Create reenrollment application and redirect to app page
+    function CreateReenrollmentAppAndRedirect() {
+        var id = $(".appId").text();
+        id = (id ? id : "");
+        var postdata = { 'id': id }
+        $.ajax({
+            url: "/vpkreenrollment/createapp",
+            contentType: 'application/json; charset=UTF-8',
+            type: "POST",
+            
+            data: JSON.stringify(postdata),
+            success: function (responseData) {
+                // redirect to vpk reenrollment application page
+                window.location.href = "/vpkreenrollment?id=" + responseData;
+            },
+            error: function (xhr, status, err) {
+                // redirect to logon page
+                var responseHeader = $.parseJSON(xhr.getResponseHeader('X-Responded-JSON'));
+                if (responseHeader && responseHeader.status == 401) {
+                    window.location.href = "/SsoAccount/SignIn";
+                }
+
+                // Show modal dialog if open application is exist
+                if (JSON.parse(xhr.responseText) == "openappexist") {
+                    $("#appExistDialogPanel").modal("show").on("shown.bs.modal", function () {
+                        $(this).find(".btn-primary").focus();
+                    });
+                }
+                else {
+                    // redirect to error page
+                    window.location.href = "/vpkreenrollment/error";
+                }
+            }
+        });
+    }
+
+</script>
+                <style>
+    .title {
+        background-color: darkgrey;
+        font-weight: bolder;
+        font: bold;
+    }
+
+      .tooltip-inner {
+        min-width: initial;
+        max-width: 100%;
+        text-align: left;
+        white-space: nowrap;
+        z-index: 9999;
+    }
+
+
+</style>
+<div style="border: 1px solid #d2d2d2; margin-bottom: 1rem;">
+    <div class="panel-heading big" style="padding: 15px;">
+        <h3 class="panel-title text-capitalize">
+            <span data-toggle="tooltip" data-placement="top" style="font-size: 20px; font-weight: 700; color: #0B4C6F;" data-original-title="" title="">School Readiness Applications</span>      
+        </h3>
+    </div>
+    <div>
+
+        
+            <div class="container-fluid">
+                <div>
+                    
+                    <span style="font-size: 12px;">
+                        
+                            <p class="" style="font-size: 12px; font-weight: 400; color: #7A7A7A; margin-top: 1rem;">
+                                There are no saved School Readiness applications associated with this account.
+                            </p>
+
+                            <p class="" style="font-size: 12px; font-weight: 400; color: #7A7A7A; margin-top: 1rem;">
+                                Click the <strong>Create a new School Readiness application</strong> button to create a new SR application.
+                            </p>
+                    </span>
+                </div>
+            </div>
+                <span class="hidden-xs" style="display: flex; justify-content: flex-end;">
+                    <a href="https://familyservices.floridaearlylearning.com/SR/Prequalify" class="btn btn-success btn-lg hidden-xs" style="border: 1px solid #01689B; color: #01689B; border-radius: 3px; box-shadow: none; background: #FFFFFF; display: flex; justify-content: space-between;  align-items: center;width: fit-content; margin: 10px 15px 1rem 0;"> 
+                            <span><svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19.5 12.5625V13.4375H12.9375V20H12.0625V13.4375H5.5V12.5625H12.0625V6H12.9375V12.5625H19.5Z" fill="#01689B"></path>
+                            </svg></span>
+                            <span style="margin-left: 12px;text-wrap:wrap; font-size: 14px;">Create a new School Readiness application</span> </a>
+                </span>
+                <span style="display: flex; justify-content: center;" class="hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl">
+                        <a href="https://familyservices.floridaearlylearning.com/SR/Prequalify" class="btn btn-success btn-lg hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="border: 1px solid #01689B; color: #01689B; border-radius: 3px; box-shadow: none; background: #FFFFFF; display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; margin-top: 10px;"> 
+                            <span><svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19.5 12.5625V13.4375H12.9375V20H12.0625V13.4375H5.5V12.5625H12.0625V6H12.9375V12.5625H19.5Z" fill="#01689B"></path>
+                            </svg></span>
+                            <span style="margin-left: 12px;text-wrap:wrap; font-size: 14px;">Create a new School Readiness application</span> </a>
+                </span>
+        
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+//    $('.onceSR').click(function (e) {
+//        window.location.href = $(this).data("url");
+//    }).dblclick(function(e){
+//   //Prevent double-click in case of fast animation or sloppy browser. 
+//  e.stopPropagation();
+//  e.preventDefault();
+//  return false;
+//}); 
+     $('.onceSR').click(function (e) {
+            if ($(this).hasClass('disabled'))
+                return false;
+
+            $(this).attr("disabled", "disabled");
+            $(this).addClass('disabled');
+            return true;
+     });
+</script>
+
+
+<script src="./Family Portal_ Family Profile_files/slick"></script>
+
+<link href="./Family Portal_ Family Profile_files/slickStyles" rel="stylesheet">
+
+
+<div class="panel-border">
+    <div class="panel-heading big">
+        <h3 class="panel-title text-capitalize">
+            <span data-toggle="tooltip" data-placement="top" style="font-size: 20px; font-weight: 700; color: #0B4C6F;" data-original-title="" title="">Helpful Links</span>      
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="panel-body">
+            <div class="carousel slick-initialized slick-slider">
+                <div aria-live="polite" class="slick-list draggable" style="height: 168px;"><div class="slick-track" role="listbox" style="opacity: 1; width: 1393px; left: 0px;"><div class="media slick-slide slick-current slick-active" data-slick-index="0" aria-hidden="false" tabindex="-1" role="option" aria-describedby="slick-slide00" style="width: 1393px;">
+                    <div class="media-left center" style="padding: 1em; vertical-align: middle;">
+                        <img alt="Baby Navigator QR Code" data-content="Baby Navigator QR Code" class="media-object" src="./Family Portal_ Family Profile_files/baby_navigator_qrcode.png" data-toggle="popover" style="max-width: 10em; max-height: 10em; margin-left: 1em;" data-original-title="" title="">
+                    </div>
+                    <div class="media-body media-middle" style="padding: 1em">
+                        <h4 class="media-heading fontFP">Baby Navigator - Resources to support your child's learning and development.</h4>
+                        <p style="margin-top: 0em; font-size: 12px;">The Division of Early Learning invites you to join Baby Navigator to access resources that will help you support your child’s early learning. Join Baby Navigator from pregnancy until your baby is 18 months old. Everything is free for families. To join Baby Navigator, text <strong>ELC</strong> to 855-692-2291 or scan our QR code.</p>
+                    </div>
+                </div></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.carousel').slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            autoplay: true,
+            autoplaySpeed: 30000,
+            dots: true,
+            infinite: true,
+            adaptiveHeight: true
+        });
+
+        $('[data-toggle="popover"]').popover({ trigger: "hover" });
+    });
+</script>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <script>
+        $(function () {
+            $('#myTab a:first').tab('show');
+        })
+        $(document).ready(function () {
+            var showVPkFastScoreNotification = 'False';
+
+            if (showVPkFastScoreNotification === "True") {
+                $('#divVPKFastScoreNotification').modal({
+                    backdrop: "static",
+                    keyboard: true
+                }).on("shown.bs.modal", function () {
+                    $(this).find(".btn-primary").focus();
+                });
+            }
+
+            $("#btnDonotShowKVPkFastScoreNotification").on("click", function () {
+                $("#divVPKFastScoreNotification").modal("hide");
+
+                $.ajax({
+                    url: '/CustomerPortal/DoNotShowVPkFastScoreNotification',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8'
+                });
+            });
+
+            $("#btnVPkFastScoreNotificationOK").on("click", function () {
+                $("#divVPKFastScoreNotification").modal("hide");
+                $.ajax({
+                    url: '/CustomerPortal/VPkFastScoreNotificationOK',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8'
+                });
+            });
+        });
+
+    </script>
+</div>
+<div id="divVPKFastScoreNotification" class="modal" tabindex="-1" role="dialog" style="margin:auto 0;">
+    <div class="modal-content popup">
+        <div class="modal-header">
+            <h4 class="modal-title"><span class="glyphicon glyphicon-info-sign btn-lg"></span>VPK FAST Scores Notification</h4>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:large; margin:auto auto 20pt auto;">
+                Your child's VPK FAST Scores can now be accessed by clicking
+                the blue "VPK FAST Scores" button next to your child's name in the Household at a Glance section. If you have multiple
+                children, only those enrolled in VPK will have the blue "VPK FAST Scores" button.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="btnVPkFastScoreNotificationOK" class="btn btn-primary">OK</button>
+            <button class="btn btn-primary" id="btnDonotShowKVPkFastScoreNotification">Do Not Show Again</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+    </div>
+
+
+    <!-- Modal -->
+
+    <div class="modal fade" id="signUpModal" style="overflow: anywhere; width: 100VW;" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" style="overflow-wrap: anywhere;">
+            <div class="modal-content" style="width: 90%;">
+                <div class="modal-header">
+                    <button type="button" data-dismiss="modal" class="close" aria-hidden="true">
+                        <span aria-hidden="true">× </span>
+                        <span class="hide">Close</span>
+                    </button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Single Sign-On</h4>
+                </div>
+                <div class="modal-body" style="overflow-wrap: anywhere;">
+                    <p>
+                        With the most recent updates, the Family Portal will now be accessed using Single Sign-On (SSO). Once you complete set up through SSO, return to the Family Portal and click the Sign In button.
+                    </p>
+                    <p>
+                        For additional details and instructions, click <a target="_blank" href="https://familyservices.floridaearlylearning.com/Content/Resources/CoalitionPortalUserGuideFamilyProcesses-SIgnInandSignUp.pdf"> this link </a> to download the set-up support document.
+                    </p>
+                    <button type="button" id="signUpYesButton" class="btn btn-default navbar-btn" onclick="onSingUpYesClick();" data-dismiss="modal" style="background:#01689B; color:#FFFFFF;display:flex;align-items:center;border:none;box-shadow:none;">
+                        Proceed to Single Sign-On (SSO)----&gt;
+                    </button>
+
+                </div>
+                <div class="modal-footer" style="overflow-wrap: anywhere;">
+                    <button type="button" class="btn btn-default" onclick="onSingUpNoClick();" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- End Modal -->
+
+
+
+        <div id="footer" class="container-fluid text-center small" style="font-size: 14px; text-align: center;">
+            <div>
+                Please contact your <a href="https://familyservices.floridaearlylearning.com/CustomerPortal/AcknowledgeStatute#" target="_blank" style="color: #01689B" onclick="window.open(&#39;http://www.floridaearlylearning.com/parents/find_quality_child_care/locate_a_child_care_resource_referral_program/countys_early_learning_coalition.aspx&#39;);">
+                    early
+                    learning coalition
+                </a> for immediate assistance.
+            </div>
+            <div>
+                This site is best viewed with Microsoft Edge. Download the latest version of <a target="_blank" href="https://www.microsoft.com/en-us/edge">Microsoft Edge</a>.
+            </div>
+            <div>
+                If you are using an Apple device (iPad, iPhone, Mac computer, MacBook), please download and use <a target="_blank" href="https://itunes.apple.com/us/app/chrome-web-browser-by-google/id535886823?mt=8">Google Chrome</a>,
+                instead of Safari, to complete your application.
+            </div>
+        </div>
+
+    
+
+
+
+
+
+
+    <script type="text/javascript">
+        $('.datetimepicker').on('click', function (e) {
+            e.preventDefault();
+            $(this).attr("autocomplete", "off");
+        });
+
+        function onSingUpYesClick() {
+            window.location.href = "/SsoAccount/SignUp";
+        }
+
+        function onSingUpNoClick() {
+            $("#signUpModal").modal('hide');
+        }
+
+    </script>
+
+
+
+</body></html>

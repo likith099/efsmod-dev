@@ -1,0 +1,336 @@
+/* Family Portal Styles - Based on FLWINS Design */
+
+/* Global Styles */
+body {
+    background-color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navigation Styles */
+.portal-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px -1px 0px 0px #F1F1F1 inset;
+    background: white;
+    position: fixed;
+    width: 100%;
+    z-index: 10;
+    padding: 1rem 2rem;
+    top: 0;
+}
+
+.portal-nav .logo {
+    position: relative;
+    padding: 2px 10px 4px 10px;
+    float: left;
+}
+
+.portal-nav .sign-out-btn {
+    background: #01689B;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    border: none;
+    box-shadow: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.portal-nav .sign-out-btn:hover {
+    background: #014d73;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+/* Main Content */
+.main-content {
+    padding: 120px 20px 20px 20px;
+    width: 100%;
+    display: inline-block;
+    position: relative;
+}
+
+/* Welcome Section */
+.welcome-section {
+    font-size: medium;
+    font-weight: bold;
+    padding: 15px 0px 5px 0px;
+    margin-bottom: 20px;
+}
+
+/* Breadcrumb Styles */
+.breadcrumb-section {
+    display: flex;
+    align-items: center;
+    margin: 0 -26px 20px;
+    border-radius: 0;
+    border-right: none;
+    border-left: none;
+    box-shadow: none;
+    padding: 1rem 3rem;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+}
+
+.breadcrumb-section a {
+    color: #428bca;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.breadcrumb-section .separator {
+    margin: 8px 10px 0;
+}
+
+.breadcrumb-section .current {
+    color: #4b4b4b;
+    font-weight: 400;
+}
+
+/* Font Styles */
+.fontFP {
+    font-size: 18px !important;
+}
+
+.fontHeader {
+    font-size: 20px !important;
+}
+
+.fw-700 {
+    font-weight: 700 !important;
+}
+
+.fw-400 {
+    font-weight: 400 !important;
+}
+
+/* Panel Styles */
+.portal-panel {
+    border: 1px solid #d2d2d2;
+    margin-bottom: 1rem;
+    border-radius: 3px;
+}
+
+.portal-panel-heading {
+    padding: 15px;
+    background: #f8f8f8;
+    border-bottom: 1px solid #d2d2d2;
+}
+
+.portal-panel-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0B4C6F;
+    margin: 0;
+}
+
+.portal-panel-body {
+    padding: 15px;
+}
+
+/* Household Overview Styles */
+.household-overview {
+    padding: 16px;
+    border: 1px solid #d2d2d2;
+    margin-bottom: 20px;
+}
+
+.household-header {
+    text-align: center;
+    color: #2D2D2D;
+    background: #F8F7F5;
+    font-weight: 700;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.household-id {
+    border: 0;
+    color: #3864b2;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: white;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 2px 5px;
+    float: right;
+}
+
+.household-table {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.household-table thead tr {
+    background: #F8F7F5;
+}
+
+.household-table th {
+    background: #F8F7F5;
+    font-size: 14px;
+    padding: 8px;
+    border-bottom: 1px solid #D2D2D2;
+}
+
+.household-table td {
+    padding: 16px 8px;
+    background: #FFFFFF;
+    color: #4B4B4B;
+    font-size: 12px;
+    border-bottom: 1px solid #D2D2D2;
+}
+
+/* Application Panels */
+.applications-panel {
+    border: 1px solid #d2d2d2;
+    margin-bottom: 1rem;
+}
+
+.no-applications-text {
+    font-size: 12px;
+    font-weight: 400;
+    color: #7A7A7A;
+    margin-top: 1rem;
+}
+
+/* Action Buttons */
+.create-app-btn {
+    border: 1px solid #01689B;
+    color: #01689B;
+    border-radius: 3px;
+    box-shadow: none;
+    background: #FFFFFF;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: fit-content;
+    margin: 10px 15px 1rem 0;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.create-app-btn:hover {
+    background: #f8f9fa;
+    color: #01689B;
+    text-decoration: none;
+}
+
+.create-app-btn svg {
+    margin-right: 12px;
+}
+
+/* Form Styles */
+.form-values {
+    font-size: 18px;
+    color: #7A7A7A;
+    font-weight: 400;
+    box-shadow: none !important;
+}
+
+.form-control {
+    font-size: 18px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+    .fontFP {
+        font-size: 14px !important;
+    }
+
+    .fontHeader {
+        font-size: 14px !important;
+    }
+
+    .form-values {
+        font-size: 14px;
+    }
+
+    .form-control {
+        font-size: 14px;
+    }
+
+    .main-content {
+        padding: 100px 10px 20px 10px;
+    }
+
+    .breadcrumb-section {
+        margin: 0 -16px 20px;
+        padding: 1rem 2rem;
+    }
+
+    .create-app-btn {
+        width: 100%;
+        justify-content: center;
+        margin: 10px 0 1rem 0;
+    }
+
+    .portal-nav {
+        padding: 1rem;
+    }
+
+    .household-table {
+        font-size: 12px;
+    }
+
+    .household-table th,
+    .household-table td {
+        padding: 8px 4px;
+    }
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.pull-right {
+    float: right;
+}
+
+.hidden-xs {
+    display: block;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+/* Icons */
+.icon-plus {
+    width: 25px;
+    height: 24px;
+    fill: #01689B;
+}
+
+/* Links */
+a {
+    color: #01689B;
+}
+
+a:hover {
+    color: #014d73;
+}
+
+/* Footer */
+.portal-footer {
+    text-align: center;
+    font-size: 14px;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    margin-top: 40px;
+}
+
+.portal-footer div {
+    margin-bottom: 15px;
+}
+
+.portal-footer a {
+    color: #01689B;
+}

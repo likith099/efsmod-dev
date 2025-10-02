@@ -1,25 +1,94 @@
 @{
-    ViewBag.Title = "Service Request - Start";
+    ViewBag.Title = "School Readiness Application - Start";
+    Layout = "~/Views/Shared/_FamilyPortalLayout.cshtml";
 }
 
-<div class="page-header">
-    <h2>@ViewBag.Title</h2>
-    @if (User.Identity.IsAuthenticated)
-    {
-        <p class="lead">Welcome, @(User.Identity.Name ?? "User") — you are signed in.</p>
-    }
-    else
-    {
-        <div class="alert alert-warning">You are not signed in. Please sign in to continue.</div>
-        <p>@Html.ActionLink("Sign In", "Login", "Account", new { returnUrl = Url.Action("Start", "SR") }, new { @class = "btn btn-primary" })</p>
-    }
+<div style="max-width: 800px; margin: 0 auto;">
+    <!-- SR Start Page Header -->
+    <div class="portal-panel">
+        <div class="portal-panel-heading">
+            <h3 class="portal-panel-title">Welcome to School Readiness</h3>
+        </div>
+        <div class="portal-panel-body">
+            <div class="media" style="margin-bottom: 20px;">
+                <div class="media-body">
+                    <p class="fontFP">
+                        The School Readiness program helps eligible families access quality child care and early learning opportunities 
+                        for their children. Financial assistance is available based on family income and other eligibility criteria.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eligibility Information -->
+    <div class="portal-panel">
+        <div class="portal-panel-heading">
+            <h4 style="margin: 0; font-size: 16px; color: #0B4C6F;">Who is Eligible?</h4>
+        </div>
+        <div class="portal-panel-body">
+            <ul style="margin: 0; padding-left: 20px;">
+                <li>Children from birth until they enter kindergarten</li>
+                <li>Families who meet income guidelines</li>
+                <li>Children in protective services</li>
+                <li>Children experiencing homelessness</li>
+                <li>Families receiving Temporary Assistance for Needy Families (TANF)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Required Documents -->
+    <div class="portal-panel">
+        <div class="portal-panel-heading">
+            <h4 style="margin: 0; font-size: 16px; color: #0B4C6F;">Documents You'll Need</h4>
+        </div>
+        <div class="portal-panel-body">
+            <p style="margin-bottom: 10px; font-weight: 600;">For Each Child:</p>
+            <ul style="margin-bottom: 15px; padding-left: 20px;">
+                <li>Birth certificate</li>
+                <li>Social Security card or Individual Taxpayer Identification Number (ITIN)</li>
+                <li>Current immunization records</li>
+                <li>Physical examination (must be current within 12 months)</li>
+            </ul>
+            
+            <p style="margin-bottom: 10px; font-weight: 600;">For Each Parent/Guardian:</p>
+            <ul style="margin-bottom: 15px; padding-left: 20px;">
+                <li>Photo identification</li>
+                <li>Social Security card or ITIN</li>
+                <li>Proof of income for the past 3 months</li>
+                <li>Proof of residence</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="@Url.Action("Application", "SR")" class="create-app-btn" style="margin: 10px; display: inline-flex;">
+            <svg class="icon-plus" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.5 12.5625V13.4375H12.9375V20H12.0625V13.4375H5.5V12.5625H12.0625V6H12.9375V12.5625H19.5Z" fill="#01689B"></path>
+            </svg>
+            Start Application
+        </a>
+        
+        <a href="@Url.Action("FamilyPortal", "Home")" style="margin: 10px; display: inline-block; padding: 12px 20px; border: 1px solid #ccc; background: #f8f9fa; color: #666; text-decoration: none; border-radius: 3px;">
+            Return to Family Portal
+        </a>
+    </div>
+
+    <!-- Important Notice -->
+    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 3px; padding: 15px; margin: 20px 0;">
+        <h5 style="color: #856404; margin-top: 0;">Important Notice</h5>
+        <p style="color: #856404; margin-bottom: 0; font-size: 14px;">
+            Processing time may vary. Please ensure all required documents are ready before starting your application. 
+            Contact your local Early Learning Coalition if you need assistance.
+        </p>
+    </div>
 </div>
 
-@if (User.Identity.IsAuthenticated)
-{
-    <p>Continue with your Service Request.</p>
-    <p>
-        @Html.ActionLink("Go to Profile", "Profile", "Account", null, new { @class = "btn btn-default" })
-        @Html.ActionLink("Logout", "Logout", "Account", null, new { @class = "btn btn-danger" })
-    </p>
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            console.log('SR Start page loaded');
+        });
+    </script>
 }

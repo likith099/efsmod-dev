@@ -31,5 +31,18 @@ namespace aspnet_get_started.Controllers
         {
             return View();
         }
+
+        public ActionResult FamilyPortal()
+        {
+            // Set sample data - in real implementation, this would come from database/services
+            ViewBag.UserEmail = "user@example.com"; // Get from authentication
+            ViewBag.HouseholdId = "0002615634";
+            ViewBag.Parents = ""; // Load from database
+            ViewBag.OtherMembers = ""; // Load from database
+            ViewBag.ChildrenNeedingCare = ""; // Load from database
+            ViewBag.HouseholdSize = 0; // Calculate from database
+
+            return View();
+        }
     }
 }

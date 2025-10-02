@@ -1,0 +1,154 @@
+@{
+    ViewBag.Title = "Family Portal";
+    Layout = "~/Views/Shared/_FamilyPortalLayout.cshtml";
+    ViewBag.UserEmail = "user@example.com"; // This would come from authentication
+}
+
+<!-- Household at a Glance Section -->
+<div class="household-overview">
+    <div class="household-header fontHeader">
+        Household at a Glance
+        <span class="household-id pull-right">
+            HH_@(ViewBag.HouseholdId ?? "0002615634")
+        </span>
+        <div style="clear: both;"></div>
+    </div>
+    
+    <!-- Desktop Table -->
+    <table class="household-table hidden-xs">
+        <thead>
+            <tr>
+                <th style="width: 20%;">Parents</th>
+                <th style="width: 30%;">Other Household Members</th>
+                <th style="width: 30%;">Children Needing Care</th>
+                <th style="width: 20%;">Total Household Size</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@(ViewBag.Parents ?? "")</td>
+                <td>@(ViewBag.OtherMembers ?? "")</td>
+                <td>@(ViewBag.ChildrenNeedingCare ?? "")</td>
+                <td style="text-align: center;">@(ViewBag.HouseholdSize ?? 0)</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Mobile Tables -->
+    <div class="hidden-sm hidden-md hidden-lg">
+        <table class="household-table" style="margin-bottom: 1rem;">
+            <thead>
+                <tr><th>Parents</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>@(ViewBag.Parents ?? "")</td></tr>
+            </tbody>
+        </table>
+        
+        <table class="household-table" style="margin-bottom: 1rem;">
+            <thead>
+                <tr><th>Other Household Members</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>@(ViewBag.OtherMembers ?? "")</td></tr>
+            </tbody>
+        </table>
+        
+        <table class="household-table" style="margin-bottom: 1rem;">
+            <thead>
+                <tr><th>Children Needing Care</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>@(ViewBag.ChildrenNeedingCare ?? "")</td></tr>
+            </tbody>
+        </table>
+        
+        <table class="household-table" style="margin-bottom: 3.2rem;">
+            <thead>
+                <tr><th>Total Household Size</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>@(ViewBag.HouseholdSize ?? 0)</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- VPK Applications Panel -->
+<div class="applications-panel">
+    <div class="portal-panel-heading">
+        <h3 class="portal-panel-title">VPK Applications</h3>
+    </div>
+    <div class="portal-panel-body">
+        <p class="no-applications-text">
+            There are no saved VPK applications associated with this account. Click the <strong>Create a new VPK application</strong> button to create a new VPK application.
+        </p>
+        
+        <div class="btn-container">
+            <a href="@Url.Action("CreateVPK", "Applications")" class="create-app-btn">
+                <svg class="icon-plus" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.5 12.5625V13.4375H12.9375V20H12.0625V13.4375H5.5V12.5625H12.0625V6H12.9375V12.5625H19.5Z" fill="#01689B"></path>
+                </svg>
+                Create a new VPK application
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- School Readiness Applications Panel -->
+<div class="applications-panel">
+    <div class="portal-panel-heading">
+        <h3 class="portal-panel-title">School Readiness Applications</h3>
+    </div>
+    <div class="portal-panel-body">
+        <p class="no-applications-text">
+            There are no saved School Readiness applications associated with this account.
+        </p>
+        <p class="no-applications-text">
+            Click the <strong>Create a new School Readiness application</strong> button to create a new SR application.
+        </p>
+        
+        <div class="btn-container">
+            <a href="@Url.Action("Start", "SR")" class="create-app-btn">
+                <svg class="icon-plus" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.5 12.5625V13.4375H12.9375V20H12.0625V13.4375H5.5V12.5625H12.0625V6H12.9375V12.5625H19.5Z" fill="#01689B"></path>
+                </svg>
+                Create a new School Readiness application
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Helpful Links Panel -->
+<div class="portal-panel">
+    <div class="portal-panel-heading">
+        <h3 class="portal-panel-title">Helpful Links</h3>
+    </div>
+    <div class="portal-panel-body">
+        <div class="media" style="padding: 1em;">
+            <div class="media-left" style="padding: 1em; vertical-align: middle;">
+                <!-- Placeholder for QR code image -->
+                <div style="width: 100px; height: 100px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; margin-left: 1em;">
+                    <span style="color: #999; font-size: 12px;">QR Code</span>
+                </div>
+            </div>
+            <div class="media-body" style="padding: 1em;">
+                <h4 class="media-heading fontFP">Baby Navigator - Resources to support your child's learning and development.</h4>
+                <p style="margin-top: 0em; font-size: 12px;">
+                    The Division of Early Learning invites you to join Baby Navigator to access resources that will help you support your child's early learning. 
+                    Join Baby Navigator from pregnancy until your baby is 18 months old. Everything is free for families. 
+                    To join Baby Navigator, text <strong>ELC</strong> to 855-692-2291 or scan our QR code.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            // Add any JavaScript functionality here
+            console.log('Family Portal loaded');
+        });
+    </script>
+}
