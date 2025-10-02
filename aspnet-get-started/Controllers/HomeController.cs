@@ -26,5 +26,10 @@ namespace aspnet_get_started.Controllers
 
             return View();
         }
+
+        public ActionResult Diagnostics()
+        {
+            return View();
+        }
     }
 }
