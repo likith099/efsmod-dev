@@ -10,12 +10,6 @@ namespace aspnet_get_started.Controllers
     {
         public ActionResult Index()
         {
-            // Pass authentication status to view
-            ViewBag.IsAuthenticated = User.Identity.IsAuthenticated;
-            if (User.Identity.IsAuthenticated)
-            {
-                ViewBag.UserName = User.Identity.Name;
-            }
             return View();
         }
 
