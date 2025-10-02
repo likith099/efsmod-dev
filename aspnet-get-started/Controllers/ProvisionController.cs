@@ -68,38 +68,9 @@ namespace aspnet_get_started.Controllers
                 {
                     // Invite as B2B guest to EFSM tenant
                     // TODO: Re-enable after adding Microsoft.Net.Http package
-                    // var token = await GraphHelper.GetAppTokenAsync(tenantId, clientId, clientSecret);
-                    var token = "placeholder-token"; // Temporary fix
-                    // TODO: Re-enable after adding Microsoft.Net.Http package
-                    /*
-                    var invitePayload = new
-                    {
-                        invitedUserEmailAddress = model.email,
-                        invitedUserDisplayName = string.IsNullOrWhiteSpace(model.displayName) ? model.email : model.displayName,
-                        inviteRedirectUrl = ssoUrl,
-                        sendInvitationMessage = false
-                    };
-
-                    var http = new HttpClient();
-                    var req = new HttpRequestMessage(HttpMethod.Post, "https://graph.microsoft.com/v1.0/invitations");
-                    req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                    req.Content = new StringContent(JsonConvert.SerializeObject(invitePayload), Encoding.UTF8, "application/json");
-
-                    var resp = await http.SendAsync(req);
-                    var respText = await resp.Content.ReadAsStringAsync();
-                    graphStatus = resp.StatusCode.ToString();
-                    */
-                    
-                    // Temporary placeholder for Graph API call
+                    // Graph API integration temporarily disabled
                     graphStatus = "Disabled";
-                    try
-                    {
-                        graphResult = JsonConvert.DeserializeObject(respText);
-                    }
-                    catch
-                    {
-                        graphResult = respText;
-                    }
+                    graphResult = "Graph API integration temporarily disabled due to missing Microsoft.Net.Http package";
                 }
             }
             catch (Exception ex)

@@ -63,7 +63,7 @@ namespace aspnet_get_started.Controllers
 
         // GET: Account/Profile
         [RequireAuth]
-        public ActionResult Profile()
+        public new ActionResult Profile()
         {
             ViewBag.Message = "Your profile page.";
             
