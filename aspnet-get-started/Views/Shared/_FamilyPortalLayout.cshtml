@@ -40,7 +40,7 @@
             <div class="auth-buttons">
             @if (ViewBag.IsAuthenticated == true)
             {
-                <span style="color: var(--text-medium); font-size: 0.875rem; margin-right: 12px;">
+                <span style="color: var(--text-dark); font-size: 1.1rem; margin-right: 12px; font-weight: 500; background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-light);">
                     Welcome, @(ViewBag.UserName ?? "User")
                 </span>
                 <a href="@Url.Action("Logout", "Home")" class="auth-btn signout">
