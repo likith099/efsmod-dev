@@ -10,13 +10,19 @@ namespace aspnet_get_started.Controllers
     public class HomeController : Controller
     {
         /// <summary>
-        /// Check if user is authenticated via Azure App Service Easy Auth
+        /// Check if user is authenticated via Azure App Service Easy Auth or localhost session
         /// </summary>
         private bool IsUserAuthenticated()
         {
             // Check standard ASP.NET authentication
             if (User.Identity.IsAuthenticated)
                 return true;
+                
+            // Check localhost development session
+            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            {
+                return Session["IsAuthenticated"] != null && (bool)Session["IsAuthenticated"];
+            }
                 
             // Check Azure App Service Easy Auth headers
             var clientPrincipal = Request.Headers["X-MS-CLIENT-PRINCIPAL"];
@@ -30,6 +36,12 @@ namespace aspnet_get_started.Controllers
         {
             if (User.Identity.IsAuthenticated)
                 return User.Identity.Name;
+                
+            // Check localhost development session
+            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            {
+                return Session["UserName"]?.ToString() ?? "Development User";
+            }
                 
             // Try Azure App Service headers
             return Request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"] ?? 
@@ -95,17 +107,44 @@ namespace aspnet_get_started.Controllers
             // Get the return URL from query string or default to FamilyPortal
             var returnUrl = Request.QueryString["returnUrl"] ?? Url.Action("FamilyPortal", "Home", null, Request.Url.Scheme);
             
-            // Redirect to Azure AD login via App Service Easy Auth
-            // Using your Azure AD Client ID: 7facd66f-0a8b-4757-823a-61e23d4909e2
-            var loginUrl = $"/.auth/login/aad?post_login_redirect_url={Uri.EscapeDataString(returnUrl)}";
-            return Redirect(loginUrl);
+            // Check if running on localhost (development)
+            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            {
+                // For localhost development, simulate login by setting session
+                Session["IsAuthenticated"] = true;
+                Session["UserName"] = "Development User";
+                Session["UserEmail"] = "dev@example.com";
+                
+                // Redirect to the return URL
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                // Production: Redirect to Azure AD login via App Service Easy Auth
+                // Using your Azure AD Client ID: 7facd66f-0a8b-4757-823a-61e23d4909e2
+                var loginUrl = $"/.auth/login/aad?post_login_redirect_url={Uri.EscapeDataString(returnUrl)}";
+                return Redirect(loginUrl);
+            }
         }
 
         public ActionResult Logout()
         {
-            // Redirect to Azure AD logout via App Service Easy Auth
-            var logoutUrl = "/.auth/logout?post_logout_redirect_url=" + Uri.EscapeDataString(Url.Action("Index", "Home", null, Request.Url.Scheme));
-            return Redirect(logoutUrl);
+            // Check if running on localhost (development)
+            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            {
+                // For localhost development, clear session
+                Session.Clear();
+                Session.Abandon();
+                
+                // Redirect to home page
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                // Production: Redirect to Azure AD logout via App Service Easy Auth
+                var logoutUrl = "/.auth/logout?post_logout_redirect_url=" + Uri.EscapeDataString(Url.Action("Index", "Home", null, Request.Url.Scheme));
+                return Redirect(logoutUrl);
+            }
         }
     }
 }

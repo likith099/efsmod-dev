@@ -1,5 +1,5 @@
 @{
-    ViewBag.Title = "Sign In - FLWINS Family Portal";
+    ViewBag.Title = "Sign In - EFSM Family Portal";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -90,15 +90,29 @@
     <div class="login-card">
         <h1 class="login-title">Welcome Back</h1>
         <p class="login-subtitle">
-            Sign in with your Microsoft account to access the FLWINS Family Portal and manage your family services and applications.
+            Sign in with your Microsoft account to access the EFSM Family Portal and manage your family services and applications.
         </p>
         
         <a href="@Url.Action("Login", "Home")" class="azure-login-btn">
             <svg width="20" height="20" viewBox="0 0 23 23" fill="currentColor">
                 <path d="M1 1h10v10H1zm11 0h10v10H12zM1 12h10v10H1zm11 0h10v10H12z"/>
             </svg>
-            Sign in with Microsoft
+            @if (Request.Url.Host.Contains("localhost"))
+            {
+                <text>Development Login</text>
+            }
+            else
+            {
+                <text>Sign in with Microsoft</text>
+            }
         </a>
+        
+        @if (Request.Url.Host.Contains("localhost"))
+        {
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-medium); font-style: italic;">
+                <strong>Development Mode:</strong> Click above to simulate login for localhost testing.
+            </p>
+        }
         
         <a href="@Url.Action("Index", "Home")" class="back-link">
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">

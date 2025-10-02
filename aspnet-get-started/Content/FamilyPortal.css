@@ -5,26 +5,27 @@
 
 /* CSS Variables for Light Mode Design */
 :root {
-    --primary-color: #2563eb;
-    --primary-dark: #1d4ed8;
+    --primary-color: #60a5fa; /* lighter blue */
+    --primary-dark: #3b82f6; /* mid blue accents */
     --secondary-color: #f59e0b;
     --accent-color: #06b6d4;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --error-color: #ef4444;
-    --text-dark: #1f2937;
-    --text-medium: #4b5563;
-    --text-light: #6b7280;
+    --text-dark: #334155; /* slate-700 */
+    --text-medium: #475569; /* slate-600 */
+    --text-light: #64748b;  /* slate-500 */
     --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-accent: #f1f5f9;
+    --bg-secondary: #f9fafb;
+    --bg-accent: #f8fafc;
     --border-light: #e2e8f0;
     --border-medium: #cbd5e1;
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-    --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    /* Darker gradients for better contrast with white text */
+    --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     --gradient-accent: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
     --border-radius: 8px;
@@ -41,7 +42,7 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 60%, #f1f5f9 100%);
     min-height: 100vh;
     color: var(--text-dark);
     line-height: 1.6;
@@ -78,23 +79,41 @@ body {
 }
 
 .nav-brand .logo {
-    width: 40px;
-    height: 40px;
-    background: var(--gradient-primary);
-    border-radius: var(--border-radius);
+    height: 50px !important;
+    width: auto !important;
+    max-width: 200px !important;
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1.6rem;
+    padding: 4px;
+}
+
+.nav-brand .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: none !important;
 }
 
 .nav-brand .brand-text {
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 1.25rem;
+    font-weight: 700;
+    font-size: 1.5rem;
     color: var(--text-dark);
+}
+
+.nav-brand .brand-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-light);
 }
 
 .nav-brand .brand-subtitle {
@@ -183,13 +202,13 @@ body {
 .portal-text {
     font-size: 1.3rem;
     line-height: 1.6;
-    color: var(--text-medium);
+    color: var(--text-dark);
 }
 
 .portal-text-lg {
     font-size: 1.125rem;
     line-height: 1.7;
-    color: var(--text-medium);
+    color: var(--text-dark);
 }
 
 .portal-text-sm {
@@ -234,7 +253,7 @@ body {
     font-family: 'Poppins', sans-serif;
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--text-dark);
+    color: var(--text-dark); /* default solid color */
     margin-bottom: 0.5rem;
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -288,7 +307,7 @@ body {
 }
 
 .breadcrumb-current {
-    color: var(--text-medium);
+    color: var(--text-dark);
     font-weight: 500;
 }
 
@@ -380,6 +399,7 @@ body {
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-light);
     transition: var(--transition);
+    color: var(--text-dark);
 }
 
 .info-card:hover {
@@ -469,7 +489,7 @@ body {
 
 .household-table td {
     padding: 1.25rem 1rem;
-    color: var(--text-medium);
+    color: var(--text-dark);
     font-size: 0.9rem;
     border-bottom: 1px solid var(--border-light);
     transition: var(--transition);
@@ -522,7 +542,7 @@ body {
 }
 
 .stat-label {
-    color: var(--text-medium);
+    color: var(--text-dark);
     font-size: 0.875rem;
     font-weight: 500;
 }
@@ -680,6 +700,7 @@ body {
     font-size: 0.95rem;
     line-height: 1.6;
     margin-bottom: 1.5rem;
+    color: var(--text-medium);
 }
 
 /* Loading States */
@@ -920,4 +941,120 @@ table, .household-table {
 .welcome-message, .user-greeting, span {
     text-shadow: none !important;
     color: var(--text-dark) !important;
+}
+
+/* ==========================================================
+     New Light Theme Override (Accessible, High Contrast)
+     This section intentionally overrides earlier styles to
+     ensure clear text on light backgrounds across the portal.
+     ========================================================== */
+
+/* Color system (override variables) */
+:root {
+    --primary-color: #2563eb;      /* Blue-600 */
+    --primary-dark: #1d4ed8;       /* Blue-700 */
+    --secondary-color: #f59e0b;    /* Amber-500 */
+    --accent-color: #06b6d4;       /* Cyan-500 */
+    --success-color: #10b981;      /* Emerald-500 */
+    --warning-color: #f59e0b;      /* Amber-500 */
+    --error-color: #ef4444;        /* Red-500 */
+
+    --text-dark: #0f172a;          /* Slate-900 - strong text */
+    --text-medium: #334155;        /* Slate-700 */
+    --text-light: #475569;         /* Slate-600 */
+
+    --bg-primary: #ffffff;         /* White */
+    --bg-secondary: #f8fafc;       /* Slate-50 */
+    --bg-accent: #f1f5f9;          /* Slate-100 */
+
+    --border-light: #e2e8f0;       /* Slate-200 */
+    --border-medium: #cbd5e1;      /* Slate-300 */
+
+    /* Darker gradients so white text is readable on buttons */
+    --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+    --gradient-accent: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+/* Base & containers: force light surfaces and strong text */
+body {
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-accent) 100%) !important;
+    color: var(--text-dark) !important;
+}
+
+.main-content, .container, .hero-section, .portal-panel, .info-card, .stat-card,
+.household-table, .breadcrumb-section {
+    background: var(--bg-primary) !important;
+    color: var(--text-dark) !important;
+    border-color: var(--border-light) !important;
+}
+
+/* Navigation: crisp, light, readable */
+.portal-nav {
+    background: var(--bg-primary) !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+}
+.nav-brand .brand-text { color: var(--text-dark) !important; }
+.nav-brand .brand-subtitle { color: var(--text-light) !important; }
+
+/* Headings: ensure they are not washed out by gradient text */
+.welcome-title,
+.portal-panel-title,
+.household-title {
+    color: var(--text-dark) !important;
+    background: none !important;              /* disable gradient text */
+    -webkit-text-fill-color: currentColor !important;
+}
+
+/* Body text hierarchy */
+.portal-text, .portal-text-lg { color: var(--text-dark) !important; }
+.portal-text-sm { color: var(--text-medium) !important; }
+
+/* Buttons: high-contrast gradients with white text */
+.auth-btn.signup, .create-app-btn { 
+    background: var(--gradient-primary) !important; 
+    color: #ffffff !important; 
+    border-color: transparent !important;
+}
+.auth-btn.signout { 
+    background: var(--gradient-secondary) !important; 
+    color: #ffffff !important; 
+}
+.auth-btn.signin { 
+    background: var(--bg-primary) !important; 
+    color: var(--text-dark) !important; 
+    border: 1px solid var(--border-light) !important;
+}
+.auth-btn.signin:hover { color: var(--primary-color) !important; border-color: var(--primary-color) !important; }
+.create-app-btn.secondary { background: var(--gradient-accent) !important; color: #ffffff !important; }
+
+/* Tables: clearer header/body contrast */
+.household-table thead tr { background: var(--bg-accent) !important; }
+.household-table th { color: var(--text-dark) !important; }
+.household-table td { color: var(--text-dark) !important; }
+
+/* Breadcrumbs */
+.breadcrumb-current { color: var(--text-dark) !important; }
+.breadcrumb-section a { color: var(--primary-color) !important; }
+.breadcrumb-section a:hover { color: var(--primary-dark) !important; }
+
+/* Status badges: readable on light bg */
+.status-badge.active { background: rgba(16,185,129,0.12) !important; color: #065f46 !important; border-color: rgba(16,185,129,0.3) !important; }
+.status-badge.pending { background: rgba(245,158,11,0.12) !important; color: #92400e !important; border-color: rgba(245,158,11,0.3) !important; }
+.status-badge.inactive { background: rgba(100,116,139,0.12) !important; color: #334155 !important; border-color: rgba(100,116,139,0.3) !important; }
+
+/* Links */
+a { color: var(--primary-dark) !important; }
+a:hover { color: #ffffff !important; }
+
+/* Footer */
+.portal-footer { color: var(--text-light) !important; border-top: 1px solid var(--border-light) !important; }
+.portal-footer a { color: var(--primary-color) !important; }
+.portal-footer a:hover { color: var(--primary-dark) !important; }
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .welcome-title { font-size: 28px !important; }
+    .hero-section { padding: 24px 16px !important; }
 }
