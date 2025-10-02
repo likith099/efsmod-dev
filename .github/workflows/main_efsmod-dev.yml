@@ -30,30 +30,23 @@ jobs:
       - name: Build ASP.NET MVC Application
         run: msbuild aspnet-get-started.sln /p:Configuration=Release
 
-      - name: Publish website (FileSystem)
-        shell: pwsh
-        run: |
-          $pub = Join-Path $PWD 'published'
-          if (Test-Path $pub) { Remove-Item -Recurse -Force $pub }
-          msbuild .\aspnet-get-started\aspnet-get-started.csproj /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="$pub"
-
       - name: List build output (for debugging)
         run: |
           echo "Contents of aspnet-get-started directory:"
           Get-ChildItem -Path "aspnet-get-started" -Recurse -Name
           echo ""
-          echo "Contents of published folder:"
-          if (Test-Path "published") {
-            Get-ChildItem -Path "published" -Recurse
+          echo "Contents of aspnet-get-started\bin\Release:"
+          if (Test-Path "aspnet-get-started\bin\Release") { 
+            Get-ChildItem -Path "aspnet-get-started\bin\Release" -Recurse 
           } else { 
-            echo "published directory not found" 
+            echo "Release directory not found" 
           }
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: aspnet-mvc-app
-          path: published/
+          path: aspnet-get-started/
           retention-days: 1
   deploy:
     runs-on: windows-latest
@@ -67,12 +60,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: aspnet-mvc-app
-          path: ./deploy-package
-
-      - name: List downloaded artifact (for debugging)
-        run: |
-          echo "Downloaded artifact contents:"
-          Get-ChildItem -Path "deploy-package" -Recurse
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -87,5 +74,5 @@ jobs:
         with:
           app-name: 'efsmod-dev'
           slot-name: 'Production'
-          package: ./deploy-package
+          package: .
           
