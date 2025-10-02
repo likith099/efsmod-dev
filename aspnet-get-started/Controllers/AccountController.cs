@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Security.Claims;
 using aspnet_get_started.Filters;
+using Newtonsoft.Json;
 
 namespace aspnet_get_started.Controllers
 {
@@ -86,5 +87,52 @@ namespace aspnet_get_started.Controllers
 
             return View();
         }
+
+#if DEBUG
+        // Local development utilities (DEBUG only)
+        // Simulate sign-in by setting a DEV_AUTH cookie that AzureAuthModule can read
+        public ActionResult LocalLogin(string name = "Local User", string email = "local@example.com")
+        {
+            var principal = new
+            {
+                AuthenticationType = "AzureAppService",
+                IdentityProvider = "aad",
+                UserId = Guid.NewGuid().ToString(),
+                UserDetails = string.IsNullOrWhiteSpace(name) ? email : name,
+                UserRoles = new string[] { },
+                Claims = new System.Collections.Generic.Dictionary<string, object>
+                {
+                    { "email", email },
+                    { "name", name }
+                }
+            };
+
+            var json = JsonConvert.SerializeObject(principal);
+            var b64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(json));
+            var cookie = new HttpCookie("DEV_AUTH", b64)
+            {
+                HttpOnly = false,
+                Secure = false,
+                Path = "/"
+            };
+            Response.Cookies.Add(cookie);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        public ActionResult LocalLogout()
+        {
+            if (Request.Cookies["DEV_AUTH"] != null)
+            {
+                var expired = new HttpCookie("DEV_AUTH")
+                {
+                    Expires = DateTime.UtcNow.AddDays(-1),
+                    Path = "/"
+                };
+                Response.Cookies.Add(expired);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+#endif
     }
 }

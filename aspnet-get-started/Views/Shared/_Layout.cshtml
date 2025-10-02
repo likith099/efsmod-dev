@@ -41,6 +41,9 @@
                     else
                     {
                         <li>@Html.ActionLink("Sign In", "Login", "Account", null, new { @class = "btn btn-primary navbar-btn", @style = "margin: 8px 15px;" })</li>
+                        @* For local debugging only:
+                        <li>@Html.ActionLink("Local Login", "LocalLogin", "Account", null, new { @class = "navbar-link" })</li>
+                        *@
                     }
                 </ul>
             </div>
