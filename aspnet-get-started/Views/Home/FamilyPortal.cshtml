@@ -12,7 +12,15 @@
             <div class="notification-icon">🎉</div>
             <div class="notification-content">
                 <h4>Welcome to EFSM!</h4>
-                <p>@ViewBag.WelcomeMessage</p>
+                <p>@(ViewBag.WelcomeMessage ?? "Your account has been automatically created from FLWINS and added to our Azure AD system.")</p>
+                @if (Session["AccountCreationType"] != null)
+                {
+                    <small><strong>Account Type:</strong> @Session["AccountCreationType"]</small>
+                }
+                @if (Session["AzureUserId"] != null)
+                {
+                    <br /><small><strong>Azure User ID:</strong> @Session["AzureUserId"]</small>
+                }
             </div>
             <button class="notification-close" onclick="this.parentElement.style.display='none'">×</button>
         </div>

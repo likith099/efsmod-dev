@@ -4,6 +4,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace aspnet_get_started.Controllers
 {
@@ -106,7 +110,7 @@ namespace aspnet_get_started.Controllers
         /// <summary>
         /// Handle automatic login from FLWINS system
         /// </summary>
-        public ActionResult AutoLogin(string email, string name, string token)
+        public async Task<ActionResult> AutoLogin(string email, string name, string token)
         {
             try
             {
@@ -144,14 +148,15 @@ namespace aspnet_get_started.Controllers
                     Session["UserEmail"] = email;
                     Session["AutoLoginSource"] = "FLWINS";
                     
-                    // Check if user exists in EFS system
+                    // In development, simulate Azure AD check
                     var userExists = CheckUserExists(email);
                     
                     if (!userExists && GetAutoCreateAccountsSetting())
                     {
-                        // Create new account automatically
+                        // Simulate Azure AD account creation
                         CreateUserAccount(email, name);
                         Session["IsNewAccount"] = true;
+                        Session["AccountCreationType"] = "Simulated Azure AD";
                     }
                     
                     // Redirect to Family Portal
@@ -164,14 +169,26 @@ namespace aspnet_get_started.Controllers
                     Session["FLWINSName"] = name;
                     Session["FLWINSToken"] = token;
                     
-                    // Check if user exists in EFS system
-                    var userExists = CheckUserExists(email);
+                    // Check if user exists in Azure AD
+                    var userExists = await CheckUserExistsInAzureAD(email);
                     
                     if (!userExists && GetAutoCreateAccountsSetting())
                     {
-                        // Create new account automatically
-                        CreateUserAccount(email, name);
-                        Session["IsNewAccount"] = true;
+                        // Create new account automatically in Azure AD
+                        var azureUser = await CreateUserInAzureAD(email, name);
+                        if (azureUser != null)
+                        {
+                            Session["IsNewAccount"] = true;
+                            Session["AzureUserId"] = azureUser.Id;
+                            Session["AccountCreationType"] = "Azure AD";
+                        }
+                        else
+                        {
+                            // If Azure AD creation failed, log error but continue
+                            System.Diagnostics.Debug.WriteLine($"Failed to create Azure AD user for: {email}");
+                            ViewBag.ErrorMessage = "Account creation failed. Please contact support.";
+                            return RedirectToAction("Login");
+                        }
                     }
                     
                     // Set authentication for this session
@@ -264,6 +281,238 @@ namespace aspnet_get_started.Controllers
         {
             var setting = System.Configuration.ConfigurationManager.AppSettings["AUTO_CREATE_ACCOUNTS"] ?? "true";
             return bool.TryParse(setting, out bool result) ? result : true;
+        }
+
+        /// <summary>
+        /// Check if user exists in Azure AD using Microsoft Graph API
+        /// </summary>
+        private async Task<bool> CheckUserExistsInAzureAD(string email)
+        {
+            try
+            {
+                var accessToken = await GetGraphApiAccessToken();
+                if (string.IsNullOrEmpty(accessToken))
+                    return false;
+
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = 
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var requestUrl = $"https://graph.microsoft.com/v1.0/users/{Uri.EscapeDataString(email)}";
+                    var response = await client.GetAsync(requestUrl);
+
+                    return response.IsSuccessStatusCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error checking Azure AD user: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Create user in Azure AD using Microsoft Graph API
+        /// </summary>
+        private async Task<AzureUser> CreateUserInAzureAD(string email, string name)
+        {
+            try
+            {
+                var accessToken = await GetGraphApiAccessToken();
+                if (string.IsNullOrEmpty(accessToken))
+                    return null;
+
+                // Parse name components
+                var nameParts = (!string.IsNullOrEmpty(name) ? name : email.Split('@')[0]).Split(' ');
+                var firstName = nameParts[0];
+                var lastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : firstName;
+
+                // Generate a temporary password
+                var tempPassword = GenerateTemporaryPassword();
+
+                var userPayload = new
+                {
+                    accountEnabled = true,
+                    displayName = !string.IsNullOrEmpty(name) ? name : email.Split('@')[0],
+                    mailNickname = email.Split('@')[0].Replace(".", "").Replace("-", ""),
+                    userPrincipalName = email,
+                    mail = email,
+                    givenName = firstName,
+                    surname = lastName,
+                    passwordProfile = new
+                    {
+                        forceChangePasswordNextSignIn = true,
+                        password = tempPassword
+                    },
+                    usageLocation = "US", // Set appropriate country code
+                    // Add custom attributes for FLWINS integration
+                    extensionAttributes = new Dictionary<string, string>
+                    {
+                        ["extension_source"] = "FLWINS",
+                        ["extension_createdDate"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    }
+                };
+
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = 
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var json = JsonConvert.SerializeObject(userPayload);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync("https://graph.microsoft.com/v1.0/users", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        var createdUser = JsonConvert.DeserializeObject<AzureUser>(responseContent);
+                        
+                        // Send welcome email with temporary password
+                        await SendWelcomeEmail(email, name, tempPassword);
+                        
+                        return createdUser;
+                    }
+                    else
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        System.Diagnostics.Debug.WriteLine($"Azure AD user creation failed: {errorContent}");
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error creating Azure AD user: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get access token for Microsoft Graph API
+        /// </summary>
+        private async Task<string> GetGraphApiAccessToken()
+        {
+            try
+            {
+                var tenantId = System.Configuration.ConfigurationManager.AppSettings["AZURE_TENANT_ID"];
+                var clientId = System.Configuration.ConfigurationManager.AppSettings["AZURE_CLIENT_ID"];
+                var clientSecret = System.Configuration.ConfigurationManager.AppSettings["AZURE_CLIENT_SECRET"];
+
+                if (string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
+                {
+                    System.Diagnostics.Debug.WriteLine("Azure AD configuration missing");
+                    return null;
+                }
+
+                using (var client = new HttpClient())
+                {
+                    var tokenEndpoint = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
+                    
+                    var requestBody = new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("client_id", clientId),
+                        new KeyValuePair<string, string>("client_secret", clientSecret),
+                        new KeyValuePair<string, string>("scope", "https://graph.microsoft.com/.default"),
+                        new KeyValuePair<string, string>("grant_type", "client_credentials")
+                    };
+
+                    var content = new FormUrlEncodedContent(requestBody);
+                    var response = await client.PostAsync(tokenEndpoint, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        dynamic tokenResponse = JsonConvert.DeserializeObject(responseContent);
+                        return tokenResponse.access_token;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting Graph API token: {ex.Message}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Generate a secure temporary password
+        /// </summary>
+        private string GenerateTemporaryPassword()
+        {
+            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+            const string specialChars = "!@#$%&*";
+            var random = new Random();
+            
+            var password = new StringBuilder();
+            
+            // Ensure at least one uppercase, lowercase, digit, and special char
+            password.Append(chars.Where(c => char.IsUpper(c)).OrderBy(x => random.Next()).First());
+            password.Append(chars.Where(c => char.IsLower(c)).OrderBy(x => random.Next()).First());
+            password.Append(chars.Where(c => char.IsDigit(c)).OrderBy(x => random.Next()).First());
+            password.Append(specialChars[random.Next(specialChars.Length)]);
+            
+            // Fill rest with random characters
+            for (int i = 4; i < 12; i++)
+            {
+                password.Append(chars[random.Next(chars.Length)]);
+            }
+            
+            // Shuffle the password
+            return new string(password.ToString().OrderBy(x => random.Next()).ToArray());
+        }
+
+        /// <summary>
+        /// Send welcome email to new user
+        /// </summary>
+        private async Task SendWelcomeEmail(string email, string name, string tempPassword)
+        {
+            try
+            {
+                // In production, integrate with your email service (SendGrid, Azure Communication Services, etc.)
+                // For now, we'll log the information
+                System.Diagnostics.Debug.WriteLine($"Welcome email should be sent to: {email}");
+                System.Diagnostics.Debug.WriteLine($"Temporary password: {tempPassword}");
+                
+                // TODO: Implement actual email sending
+                // Example with SendGrid or Azure Communication Services:
+                /*
+                var emailContent = $@"
+                    Welcome to EFSM, {name ?? email}!
+                    
+                    Your account has been automatically created from the FLWINS system.
+                    
+                    Your login credentials:
+                    Email: {email}
+                    Temporary Password: {tempPassword}
+                    
+                    Please log in and change your password at your next visit.
+                    
+                    Portal URL: https://efsmod-dev-egcyb2bahcdkamdm.canadacentral-01.azurewebsites.net
+                ";
+                
+                // Send email using your preferred service
+                */
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error sending welcome email: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Azure User model for deserialization
+        /// </summary>
+        public class AzureUser
+        {
+            public string Id { get; set; }
+            public string DisplayName { get; set; }
+            public string UserPrincipalName { get; set; }
+            public string Mail { get; set; }
+            public string GivenName { get; set; }
+            public string Surname { get; set; }
         }
         
         /// <summary>
