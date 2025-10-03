@@ -38,19 +38,105 @@ namespace aspnet_get_started.Controllers
         /// </summary>
         private string GetUserName()
         {
-            if (User.Identity.IsAuthenticated)
+            // 1. Check standard ASP.NET authentication
+            if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(User.Identity.Name))
                 return User.Identity.Name;
                 
-            // Check localhost development session
+            // 2. Check localhost development session
             if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
             {
-                return Session["UserName"]?.ToString() ?? "Development User";
+                var sessionUserName = Session["UserName"]?.ToString();
+                if (!string.IsNullOrEmpty(sessionUserName))
+                    return sessionUserName;
+                return "Development User";
             }
                 
-            // Try Azure App Service headers
-            return Request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"] ?? 
-                   Request.Headers["X-MS-CLIENT-PRINCIPAL-ID"] ?? 
-                   "User";
+            // 3. Try Azure App Service Easy Auth headers
+            var principalName = Request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
+            if (!string.IsNullOrEmpty(principalName))
+                return principalName;
+                
+            var principalId = Request.Headers["X-MS-CLIENT-PRINCIPAL-ID"];
+            if (!string.IsNullOrEmpty(principalId))
+                return principalId;
+                
+            // 4. Try to decode the X-MS-CLIENT-PRINCIPAL header for more user info
+            var clientPrincipal = Request.Headers["X-MS-CLIENT-PRINCIPAL"];
+            if (!string.IsNullOrEmpty(clientPrincipal))
+            {
+                try
+                {
+                    var decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(clientPrincipal));
+                    dynamic principal = JsonConvert.DeserializeObject(decoded);
+                    if (principal?.claims != null)
+                    {
+                        foreach (var claim in principal.claims)
+                        {
+                            if (claim.typ == "name" && !string.IsNullOrEmpty((string)claim.val))
+                                return claim.val;
+                            if (claim.typ == "preferred_username" && !string.IsNullOrEmpty((string)claim.val))
+                                return claim.val;
+                            if (claim.typ == "email" && !string.IsNullOrEmpty((string)claim.val))
+                                return claim.val;
+                        }
+                    }
+                }
+                catch
+                {
+                    // Continue to fallback
+                }
+            }
+                
+            return "User";
+        }
+        
+        /// <summary>
+        /// Get authenticated user email from various sources
+        /// </summary>
+        private string GetUserEmail()
+        {
+            // 1. Check session first (from auto-login or other sources)
+            var sessionEmail = Session["UserEmail"]?.ToString();
+            if (!string.IsNullOrEmpty(sessionEmail))
+                return sessionEmail;
+                
+            // 2. Check localhost development session
+            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            {
+                return sessionEmail ?? "dev@example.com";
+            }
+                
+            // 3. Try Azure App Service Easy Auth headers
+            var principalEmail = Request.Headers["X-MS-CLIENT-PRINCIPAL-EMAIL"];
+            if (!string.IsNullOrEmpty(principalEmail))
+                return principalEmail;
+                
+            // 4. Try to decode the X-MS-CLIENT-PRINCIPAL header for email
+            var clientPrincipal = Request.Headers["X-MS-CLIENT-PRINCIPAL"];
+            if (!string.IsNullOrEmpty(clientPrincipal))
+            {
+                try
+                {
+                    var decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(clientPrincipal));
+                    dynamic principal = JsonConvert.DeserializeObject(decoded);
+                    if (principal?.claims != null)
+                    {
+                        foreach (var claim in principal.claims)
+                        {
+                            if (claim.typ == "email" && !string.IsNullOrEmpty((string)claim.val))
+                                return claim.val;
+                            if (claim.typ == "preferred_username" && !string.IsNullOrEmpty((string)claim.val))
+                                return claim.val;
+                        }
+                    }
+                }
+                catch
+                {
+                    // Continue to fallback
+                }
+            }
+                
+            return GetUserName(); // Fallback to username
         }
         public ActionResult Index()
         {
@@ -74,7 +160,7 @@ namespace aspnet_get_started.Controllers
             // Set authentication status and user data
             ViewBag.IsAuthenticated = IsUserAuthenticated();
             ViewBag.UserName = GetUserName();
-            ViewBag.UserEmail = Session["UserEmail"]?.ToString() ?? GetUserName(); // Get email from session or fallback
+            ViewBag.UserEmail = GetUserEmail();
             
             // Check if this is a new account created via auto-login
             if (Session["AccountCreated"] != null && (bool)Session["AccountCreated"])
@@ -556,25 +642,43 @@ namespace aspnet_get_started.Controllers
         {
             // Get the return URL from query string or default to FamilyPortal
             var returnUrl = Request.QueryString["returnUrl"] ?? Url.Action("FamilyPortal", "Home", null, Request.Url.Scheme);
+            ViewBag.ReturnUrl = returnUrl;
             
-            // Check if running on localhost (development)
-            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            return View();
+        }
+        
+        /// <summary>
+        /// Development login - only works on localhost
+        /// </summary>
+        [HttpPost]
+        public ActionResult DevLogin(string name, string email, string returnUrl)
+        {
+            // Only allow this on localhost
+            if (!(Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1"))
             {
-                // For localhost development, simulate login by setting session
-                Session["IsAuthenticated"] = true;
-                Session["UserName"] = "Development User";
-                Session["UserEmail"] = "dev@example.com";
-                
-                // Redirect to the return URL
-                return Redirect(returnUrl);
+                return RedirectToAction("Login");
             }
-            else
-            {
-                // Production: Redirect to Azure AD login via App Service Easy Auth
-                // Using your Azure AD Client ID: 7facd66f-0a8b-4757-823a-61e23d4909e2
-                var loginUrl = $"/.auth/login/aad?post_login_redirect_url={Uri.EscapeDataString(returnUrl)}";
-                return Redirect(loginUrl);
-            }
+            
+            // Set development authentication
+            Session["IsAuthenticated"] = true;
+            Session["UserName"] = !string.IsNullOrEmpty(name) ? name : "Development User";
+            Session["UserEmail"] = !string.IsNullOrEmpty(email) ? email : "dev@example.com";
+            
+            // Redirect to return URL or Family Portal
+            var redirectUrl = !string.IsNullOrEmpty(returnUrl) ? returnUrl : Url.Action("FamilyPortal");
+            return Redirect(redirectUrl);
+        }
+        
+        /// <summary>
+        /// Azure AD login redirect
+        /// </summary>
+        public ActionResult AzureLogin()
+        {
+            var returnUrl = Request.QueryString["returnUrl"] ?? Url.Action("FamilyPortal", "Home", null, Request.Url.Scheme);
+            
+            // Production: Redirect to Azure AD login via App Service Easy Auth
+            var loginUrl = $"/.auth/login/aad?post_login_redirect_url={Uri.EscapeDataString(returnUrl)}";
+            return Redirect(loginUrl);
         }
 
         /// <summary>

@@ -39,11 +39,28 @@
         </div>
     }
     
+    @* Debug Information - Remove this section in production *@
+    @if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+    {
+        <div class="debug-info" style="background: #f0f0f0; padding: 10px; margin: 10px 0; border: 1px solid #ccc; font-size: 12px;">
+            <strong>Debug Info:</strong><br />
+            IsAuthenticated: @ViewBag.IsAuthenticated<br />
+            UserName: @ViewBag.UserName<br />
+            UserEmail: @ViewBag.UserEmail<br />
+            FromFLWINS: @ViewBag.FromFLWINS<br />
+            IsNewAccount: @ViewBag.IsNewAccount<br />
+        </div>
+    }
+
     <!-- Welcome Banner -->
     <div class="welcome-banner">
         <div class="welcome-content">
-            <h1 class="welcome-title">Welcome, @ViewBag.UserName!</h1>
+            <h1 class="welcome-title">Welcome, @(ViewBag.UserName ?? "User")!</h1>
             <p class="welcome-subtitle">Manage your family's educational services and applications</p>
+            @if (!string.IsNullOrEmpty(ViewBag.UserEmail as string))
+            {
+                <p class="user-email" style="font-size: 14px; color: #666;">@ViewBag.UserEmail</p>
+            }
         </div>
         <div class="household-info-card">
             <div class="household-header">

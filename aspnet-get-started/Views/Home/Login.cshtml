@@ -6,17 +6,112 @@
 <div class="login-container">
     <div class="login-card">
         <h1>Welcome Back</h1>
-        <p>Sign in with your Microsoft account to access the EFSM Portal.</p>
-        <a href="@Url.Action("Login", "Home")" class="create-app-btn">
-            @if (Request.Url.Host.Contains("localhost"))
-            {
-                <text>Development Login</text>
-            }
-            else
-            {
-                <text>Sign in with Microsoft</text>
-            }
-        </a>
+        <p>Sign in to access the EFSM Portal.</p>
+        
+        @if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+        {
+            <!-- Development Login Form -->
+            <div class="dev-login-section">
+                <h3>Development Login</h3>
+                <form method="post" action="@Url.Action("DevLogin", "Home")">
+                    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" value="John Doe" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" value="john.doe@example.com" class="form-control" />
+                    </div>
+                    <button type="submit" class="create-app-btn">Development Login</button>
+                </form>
+                
+                <h4>Quick Test Logins:</h4>
+                <div class="quick-login-buttons">
+                    <form method="post" action="@Url.Action("DevLogin", "Home")" style="display: inline;">
+                        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                        <input type="hidden" name="name" value="FLWINS Parent" />
+                        <input type="hidden" name="email" value="parent@flwins.org" />
+                        <button type="submit" class="quick-login-btn">FLWINS Parent</button>
+                    </form>
+                    
+                    <form method="post" action="@Url.Action("DevLogin", "Home")" style="display: inline;">
+                        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                        <input type="hidden" name="name" value="Test Guardian" />
+                        <input type="hidden" name="email" value="guardian@test.com" />
+                        <button type="submit" class="quick-login-btn">Test Guardian</button>
+                    </form>
+                </div>
+            </div>
+            
+            <hr style="margin: 20px 0;" />
+        }
+        
+        <!-- Production Login Options -->
+        <div class="production-login-section">
+            <a href="@Url.Action("AzureLogin", "Home")" class="create-app-btn microsoft-login">
+                <span class="microsoft-icon">🟦</span>
+                Sign in with Microsoft
+            </a>
+        </div>
+        
         <a href="@Url.Action("Index", "Home")" class="back-link">Back to Home</a>
     </div>
 </div>
+
+<style>
+    .dev-login-section {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .quick-login-buttons {
+        margin-top: 10px;
+    }
+    
+    .quick-login-btn {
+        display: inline-block;
+        padding: 8px 16px;
+        margin: 5px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    
+    .quick-login-btn:hover {
+        background: #0056b3;
+    }
+    
+    .microsoft-login {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .microsoft-icon {
+        margin-right: 8px;
+    }
+</style>
