@@ -183,7 +183,11 @@ namespace aspnet_get_started.Controllers
         {
             // Set authentication status and user data for the layout
             ViewBag.IsAuthenticated = IsUserAuthenticated();
-            ViewBag.UserName = GetUserName();
+            var userName = GetUserName();
+            var userEmail = GetUserEmail();
+            
+            // Ensure we never show null or empty values - show full email if no name available
+            ViewBag.UserName = !string.IsNullOrEmpty(userName) ? userName : (!string.IsNullOrEmpty(userEmail) ? userEmail : "Guest");
             
             return View();
         }
@@ -203,8 +207,8 @@ namespace aspnet_get_started.Controllers
             var userName = GetUserName();
             var userEmail = GetUserEmail();
             
-            // Ensure we never show null or empty values
-            ViewBag.UserName = !string.IsNullOrEmpty(userName) ? userName : (!string.IsNullOrEmpty(userEmail) ? userEmail.Split('@')[0] : "Guest");
+            // Ensure we never show null or empty values - show full email if no name available
+            ViewBag.UserName = !string.IsNullOrEmpty(userName) ? userName : (!string.IsNullOrEmpty(userEmail) ? userEmail : "Guest");
             ViewBag.UserEmail = userEmail;
             
             // Get user profile information
@@ -778,8 +782,12 @@ namespace aspnet_get_started.Controllers
             
             // Set authentication data for layout
             ViewBag.IsAuthenticated = IsUserAuthenticated();
-            ViewBag.UserName = GetUserName();
-            ViewBag.UserEmail = GetUserEmail();
+            var userName = GetUserName();
+            var userEmail = GetUserEmail();
+            
+            // Ensure we never show null or empty values - show full email if no name available
+            ViewBag.UserName = !string.IsNullOrEmpty(userName) ? userName : (!string.IsNullOrEmpty(userEmail) ? userEmail : "Guest");
+            ViewBag.UserEmail = userEmail;
             
             // Get user profile
             var userProfile = GetUserProfile();
@@ -823,8 +831,12 @@ namespace aspnet_get_started.Controllers
             
             // Set authentication data for layout
             ViewBag.IsAuthenticated = IsUserAuthenticated();
-            ViewBag.UserName = GetUserName();
-            ViewBag.UserEmail = GetUserEmail();
+            var userName = GetUserName();
+            var userEmail = GetUserEmail();
+            
+            // Ensure we never show null or empty values - show full email if no name available
+            ViewBag.UserName = !string.IsNullOrEmpty(userName) ? userName : (!string.IsNullOrEmpty(userEmail) ? userEmail : "Guest");
+            ViewBag.UserEmail = userEmail;
             
             return View(model);
         }
