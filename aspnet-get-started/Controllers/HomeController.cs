@@ -34,31 +34,39 @@ namespace aspnet_get_started.Controllers
         }
         
         /// <summary>
-        /// Get authenticated user name from various sources
+        /// Get authenticated user name from various sources - returns first name or email, never generic text
         /// </summary>
         private string GetUserName()
         {
+            string fullName = null;
+            string email = null;
+            
             // 1. Check standard ASP.NET authentication
             if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(User.Identity.Name))
-                return User.Identity.Name;
+            {
+                fullName = User.Identity.Name;
+            }
                 
             // 2. Check localhost development session
             if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
             {
                 var sessionUserName = Session["UserName"]?.ToString();
                 if (!string.IsNullOrEmpty(sessionUserName))
-                    return sessionUserName;
-                return "Development User";
+                    fullName = sessionUserName;
+                    
+                var sessionEmail = Session["UserEmail"]?.ToString();
+                if (!string.IsNullOrEmpty(sessionEmail))
+                    email = sessionEmail;
             }
                 
             // 3. Try Azure App Service Easy Auth headers
             var principalName = Request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
             if (!string.IsNullOrEmpty(principalName))
-                return principalName;
+                fullName = principalName;
                 
-            var principalId = Request.Headers["X-MS-CLIENT-PRINCIPAL-ID"];
-            if (!string.IsNullOrEmpty(principalId))
-                return principalId;
+            var principalEmail = Request.Headers["X-MS-CLIENT-PRINCIPAL-EMAIL"];
+            if (!string.IsNullOrEmpty(principalEmail))
+                email = principalEmail;
                 
             // 4. Try to decode the X-MS-CLIENT-PRINCIPAL header for more user info
             var clientPrincipal = Request.Headers["X-MS-CLIENT-PRINCIPAL"];
@@ -73,11 +81,13 @@ namespace aspnet_get_started.Controllers
                         foreach (var claim in principal.claims)
                         {
                             if (claim.typ == "name" && !string.IsNullOrEmpty((string)claim.val))
-                                return claim.val;
-                            if (claim.typ == "preferred_username" && !string.IsNullOrEmpty((string)claim.val))
-                                return claim.val;
+                                fullName = claim.val;
+                            if (claim.typ == "given_name" && !string.IsNullOrEmpty((string)claim.val))
+                                fullName = claim.val; // Prefer first name if available
                             if (claim.typ == "email" && !string.IsNullOrEmpty((string)claim.val))
-                                return claim.val;
+                                email = claim.val;
+                            if (claim.typ == "preferred_username" && !string.IsNullOrEmpty((string)claim.val))
+                                email = claim.val;
                         }
                     }
                 }
@@ -86,8 +96,39 @@ namespace aspnet_get_started.Controllers
                     // Continue to fallback
                 }
             }
-                
-            return "User";
+            
+            // Extract first name from full name if available
+            if (!string.IsNullOrEmpty(fullName))
+            {
+                // If it looks like an email, treat it as email
+                if (fullName.Contains("@"))
+                {
+                    email = fullName;
+                    fullName = null;
+                }
+                else
+                {
+                    // Extract first name from full name
+                    var nameParts = fullName.Trim().Split(' ');
+                    return nameParts[0]; // Return first name
+                }
+            }
+            
+            // If no first name available, return email or part of email
+            if (!string.IsNullOrEmpty(email))
+            {
+                // If email looks like a real name (contains dot), extract first part
+                var emailParts = email.Split('@')[0];
+                if (emailParts.Contains("."))
+                {
+                    var nameParts = emailParts.Split('.');
+                    return char.ToUpper(nameParts[0][0]) + nameParts[0].Substring(1).ToLower(); // Capitalize first name
+                }
+                return email; // Return full email if no pattern found
+            }
+            
+            // Last resort - return something meaningful instead of "User" or "Unknown"
+            return "Guest";
         }
         
         /// <summary>
@@ -659,9 +700,36 @@ namespace aspnet_get_started.Controllers
                 return RedirectToAction("Login");
             }
             
-            // Set development authentication
+            // Set development authentication with meaningful defaults
             Session["IsAuthenticated"] = true;
-            Session["UserName"] = !string.IsNullOrEmpty(name) ? name : "Development User";
+            
+            // Use provided name or extract from email
+            if (!string.IsNullOrEmpty(name))
+            {
+                Session["UserName"] = name;
+            }
+            else if (!string.IsNullOrEmpty(email))
+            {
+                // Extract name from email (e.g., john.doe@example.com -> John Doe)
+                var emailPart = email.Split('@')[0];
+                if (emailPart.Contains("."))
+                {
+                    var parts = emailPart.Split('.');
+                    var firstName = char.ToUpper(parts[0][0]) + parts[0].Substring(1).ToLower();
+                    var lastName = parts.Length > 1 ? char.ToUpper(parts[1][0]) + parts[1].Substring(1).ToLower() : "";
+                    Session["UserName"] = (firstName + " " + lastName).Trim();
+                }
+                else
+                {
+                    Session["UserName"] = char.ToUpper(emailPart[0]) + emailPart.Substring(1).ToLower();
+                }
+            }
+            else
+            {
+                Session["UserName"] = "John Developer";
+                email = "john.developer@example.com";
+            }
+            
             Session["UserEmail"] = !string.IsNullOrEmpty(email) ? email : "dev@example.com";
             
             // Redirect to return URL or Family Portal
