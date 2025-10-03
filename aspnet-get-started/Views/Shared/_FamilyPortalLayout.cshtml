@@ -27,7 +27,8 @@
             <a href="@Url.Action("Index", "Home")" class="auth-btn signin">Home</a>
             @if (ViewBag.IsAuthenticated == true)
             {
-                <span>Welcome, @(ViewBag.UserName ?? "User")</span>
+                <span>Welcome, @(ViewBag.UserName ?? "Guest")</span>
+                <a href="@Url.Action("ManageProfile", "Home")" class="auth-btn signin">Profile</a>
                 <a href="@Url.Action("Logout", "Home")" class="auth-btn signup">Sign Out</a>
             }
             else

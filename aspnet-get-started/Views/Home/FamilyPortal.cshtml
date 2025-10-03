@@ -55,11 +55,26 @@
     <!-- Welcome Banner -->
     <div class="welcome-banner">
         <div class="welcome-content">
-            <h1 class="welcome-title">Welcome, @(ViewBag.UserName ?? "User")!</h1>
+            <h1 class="welcome-title">Welcome, @ViewBag.UserName!</h1>
             <p class="welcome-subtitle">Manage your family's educational services and applications</p>
             @if (!string.IsNullOrEmpty(ViewBag.UserEmail as string))
             {
                 <p class="user-email" style="font-size: 14px; color: #666;">@ViewBag.UserEmail</p>
+            }
+            @if (ViewBag.UserProfile != null)
+            {
+                <div class="user-profile-summary" style="margin-top: 10px; font-size: 14px; color: #666;">
+                    @if (!string.IsNullOrEmpty(ViewBag.UserProfile.FullName))
+                    {
+                        <span>@ViewBag.UserProfile.FullName</span>
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.UserProfile.PhoneNumber))
+                    {
+                        <span> • @ViewBag.UserProfile.PhoneNumber</span>
+                    }
+                    <br />
+                    <a href="@Url.Action("ManageProfile", "Home")" style="color: #007bff; text-decoration: none;">Update Profile</a>
+                </div>
             }
         </div>
         <div class="household-info-card">

@@ -200,8 +200,16 @@ namespace aspnet_get_started.Controllers
             
             // Set authentication status and user data
             ViewBag.IsAuthenticated = IsUserAuthenticated();
-            ViewBag.UserName = GetUserName();
-            ViewBag.UserEmail = GetUserEmail();
+            var userName = GetUserName();
+            var userEmail = GetUserEmail();
+            
+            // Ensure we never show null or empty values
+            ViewBag.UserName = !string.IsNullOrEmpty(userName) ? userName : (!string.IsNullOrEmpty(userEmail) ? userEmail.Split('@')[0] : "Guest");
+            ViewBag.UserEmail = userEmail;
+            
+            // Get user profile information
+            var userProfile = GetUserProfile();
+            ViewBag.UserProfile = userProfile;
             
             // Check if this is a new account created via auto-login
             if (Session["AccountCreated"] != null && (bool)Session["AccountCreated"])
@@ -757,8 +765,191 @@ namespace aspnet_get_started.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Display user profile page
+        /// </summary>
+        public ActionResult ManageProfile()
+        {
+            // Check if user is authenticated
+            if (!IsUserAuthenticated())
+            {
+                return RedirectToAction("Login", new { returnUrl = Request.Url.ToString() });
+            }
+            
+            // Set authentication data for layout
+            ViewBag.IsAuthenticated = IsUserAuthenticated();
+            ViewBag.UserName = GetUserName();
+            ViewBag.UserEmail = GetUserEmail();
+            
+            // Get user profile
+            var userProfile = GetUserProfile();
+            
+            return View(userProfile);
+        }
+        
+        /// <summary>
+        /// Update user profile (POST)
+        /// </summary>
+        [HttpPost]
+        public async Task<ActionResult> ManageProfile(UserProfile model)
+        {
+            // Check if user is authenticated
+            if (!IsUserAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+            
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Update profile in session/database
+                    SaveUserProfile(model);
+                    
+                    // Update Azure AD if not localhost
+                    if (!IsLocalhost())
+                    {
+                        await UpdateAzureADProfile(model);
+                    }
+                    
+                    ViewBag.SuccessMessage = "Profile updated successfully!";
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErrorMessage = "Error updating profile: " + ex.Message;
+                    System.Diagnostics.Debug.WriteLine($"Profile update error: {ex.Message}");
+                }
+            }
+            
+            // Set authentication data for layout
+            ViewBag.IsAuthenticated = IsUserAuthenticated();
+            ViewBag.UserName = GetUserName();
+            ViewBag.UserEmail = GetUserEmail();
+            
+            return View(model);
+        }
+        
+        /// <summary>
+        /// Get user profile from session or Azure AD
+        /// </summary>
+        private UserProfile GetUserProfile()
+        {
+            // Try to get from session first
+            var sessionProfile = Session["UserProfile"] as UserProfile;
+            if (sessionProfile != null)
+                return sessionProfile;
+            
+            // Create new profile with available information
+            var profile = new UserProfile
+            {
+                Email = GetUserEmail(),
+                LastUpdated = DateTime.UtcNow
+            };
+            
+            // Try to extract name information
+            var userName = GetUserName();
+            if (!string.IsNullOrEmpty(userName) && !userName.Contains("@"))
+            {
+                var nameParts = userName.Split(' ');
+                profile.FirstName = nameParts[0];
+                if (nameParts.Length > 1)
+                    profile.LastName = string.Join(" ", nameParts.Skip(1));
+            }
+            
+            // For localhost, check if we have stored profile data
+            if (IsLocalhost())
+            {
+                // In production, this would come from your database
+                // For now, we'll use session storage
+                Session["UserProfile"] = profile;
+            }
+            
+            return profile;
+        }
+        
+        /// <summary>
+        /// Save user profile to session/database
+        /// </summary>
+        private void SaveUserProfile(UserProfile profile)
+        {
+            profile.LastUpdated = DateTime.UtcNow;
+            profile.Email = GetUserEmail(); // Ensure email matches current user
+            
+            // Update session
+            Session["UserProfile"] = profile;
+            
+            // Update session user name if first name is provided
+            if (!string.IsNullOrEmpty(profile.FirstName))
+            {
+                Session["UserName"] = profile.FullName;
+            }
+            
+            // In production, save to database here
+            System.Diagnostics.Debug.WriteLine($"Saved profile for user: {profile.Email}");
+        }
+        
+        /// <summary>
+        /// Update user profile in Azure AD
+        /// </summary>
+        private async Task UpdateAzureADProfile(UserProfile profile)
+        {
+            try
+            {
+                var accessToken = await GetGraphApiAccessToken();
+                if (string.IsNullOrEmpty(accessToken))
+                    return;
+
+                var userEmail = GetUserEmail();
+                if (string.IsNullOrEmpty(userEmail))
+                    return;
+
+                // Prepare update payload
+                var updatePayload = new
+                {
+                    displayName = profile.FullName,
+                    givenName = profile.FirstName,
+                    surname = profile.LastName,
+                    mobilePhone = profile.PhoneNumber,
+                    streetAddress = profile.Address,
+                    city = profile.City,
+                    state = profile.State,
+                    postalCode = profile.ZipCode
+                };
+
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = 
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+                    var json = JsonConvert.SerializeObject(updatePayload);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var requestUrl = $"https://graph.microsoft.com/v1.0/users/{Uri.EscapeDataString(userEmail)}";
+                    // Use PostAsync with X-HTTP-Method-Override header for PATCH compatibility
+                    var request = new HttpRequestMessage(HttpMethod.Post, requestUrl) { Content = content };
+                    request.Headers.Add("X-HTTP-Method-Override", "PATCH");
+                    var response = await client.SendAsync(request);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        System.Diagnostics.Debug.WriteLine($"Azure AD update failed: {errorContent}");
+                        throw new Exception("Failed to update Azure AD profile");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating Azure AD profile: {ex.Message}");
+                throw;
+            }
+        }
+
         public ActionResult Logout()
         {
+            // Clear user profile session
+            Session.Remove("UserProfile");
+            
             // Check if running on localhost (development)
             if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
             {
@@ -775,6 +966,27 @@ namespace aspnet_get_started.Controllers
                 var logoutUrl = "/.auth/logout?post_logout_redirect_url=" + Uri.EscapeDataString(Url.Action("Index", "Home", null, Request.Url.Scheme));
                 return Redirect(logoutUrl);
             }
+        }
+        
+        /// <summary>
+        /// User Profile model for managing user information
+        /// </summary>
+        public class UserProfile
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string FullName => !string.IsNullOrEmpty(FirstName) && !string.IsNullOrEmpty(LastName) 
+                ? $"{FirstName} {LastName}" : (FirstName ?? LastName ?? "");
+            public string Email { get; set; }
+            public string PhoneNumber { get; set; }
+            public string Address { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public string ZipCode { get; set; }
+            public string Gender { get; set; }
+            public DateTime? DateOfBirth { get; set; }
+            public string AzureUserId { get; set; }
+            public DateTime LastUpdated { get; set; }
         }
     }
 }
