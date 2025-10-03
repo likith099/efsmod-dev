@@ -147,12 +147,21 @@ namespace aspnet_get_started.Controllers
                 return sessionEmail ?? "dev@example.com";
             }
                 
-            // 3. Try Azure App Service Easy Auth headers
+            // 3. Try standard ASP.NET authentication
+            if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(User.Identity.Name))
+            {
+                var userName = User.Identity.Name;
+                // If the username looks like an email, return it
+                if (userName.Contains("@"))
+                    return userName;
+            }
+                
+            // 4. Try Azure App Service Easy Auth headers
             var principalEmail = Request.Headers["X-MS-CLIENT-PRINCIPAL-EMAIL"];
             if (!string.IsNullOrEmpty(principalEmail))
                 return principalEmail;
                 
-            // 4. Try to decode the X-MS-CLIENT-PRINCIPAL header for email
+            // 5. Try to decode the X-MS-CLIENT-PRINCIPAL header for email
             var clientPrincipal = Request.Headers["X-MS-CLIENT-PRINCIPAL"];
             if (!string.IsNullOrEmpty(clientPrincipal))
             {
@@ -168,6 +177,8 @@ namespace aspnet_get_started.Controllers
                                 return claim.val;
                             if (claim.typ == "preferred_username" && !string.IsNullOrEmpty((string)claim.val))
                                 return claim.val;
+                            if (claim.typ == "upn" && !string.IsNullOrEmpty((string)claim.val))
+                                return claim.val;
                         }
                     }
                 }
@@ -177,7 +188,8 @@ namespace aspnet_get_started.Controllers
                 }
             }
                 
-            return GetUserName(); // Fallback to username
+            // 6. Last resort - return null instead of GetUserName() to avoid confusion
+            return null;
         }
         public ActionResult Index()
         {
@@ -766,6 +778,27 @@ namespace aspnet_get_started.Controllers
         /// </summary>
         public ActionResult TestFLWINSRedirect()
         {
+            return View();
+        }
+        
+        /// <summary>
+        /// Debug action to check current user session (localhost only)
+        /// </summary>
+        public ActionResult DebugUser()
+        {
+            if (!(Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1"))
+            {
+                return RedirectToAction("Index");
+            }
+            
+            ViewBag.SessionUserName = Session["UserName"];
+            ViewBag.SessionUserEmail = Session["UserEmail"];
+            ViewBag.SessionIsAuthenticated = Session["IsAuthenticated"];
+            ViewBag.UserIdentityName = User.Identity.Name;
+            ViewBag.UserIdentityIsAuthenticated = User.Identity.IsAuthenticated;
+            ViewBag.GetUserNameResult = GetUserName();
+            ViewBag.GetUserEmailResult = GetUserEmail();
+            
             return View();
         }
 

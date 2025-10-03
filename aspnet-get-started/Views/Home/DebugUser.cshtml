@@ -1,0 +1,43 @@
+@{
+    ViewBag.Title = "Debug User Info - EFSM";
+    Layout = "~/Views/Shared/_FamilyPortalLayout.cshtml";
+}
+
+<div style="padding: 20px; max-width: 800px; margin: 0 auto;">
+    <h1>Debug User Information</h1>
+    <p><em>This page is only available on localhost for debugging purposes.</em></p>
+    
+    <div style="background: #f8f9fa; padding: 15px; border: 1px solid #ddd; margin: 20px 0;">
+        <h3>Session Variables</h3>
+        <strong>Session["UserName"]:</strong> @ViewBag.SessionUserName<br />
+        <strong>Session["UserEmail"]:</strong> @ViewBag.SessionUserEmail<br />
+        <strong>Session["IsAuthenticated"]:</strong> @ViewBag.SessionIsAuthenticated<br />
+    </div>
+    
+    <div style="background: #e3f2fd; padding: 15px; border: 1px solid #2196f3; margin: 20px 0;">
+        <h3>ASP.NET Identity</h3>
+        <strong>User.Identity.Name:</strong> @ViewBag.UserIdentityName<br />
+        <strong>User.Identity.IsAuthenticated:</strong> @ViewBag.UserIdentityIsAuthenticated<br />
+    </div>
+    
+    <div style="background: #f3e5f5; padding: 15px; border: 1px solid #9c27b0; margin: 20px 0;">
+        <h3>Helper Methods Results</h3>
+        <strong>GetUserName():</strong> @ViewBag.GetUserNameResult<br />
+        <strong>GetUserEmail():</strong> @ViewBag.GetUserEmailResult<br />
+    </div>
+    
+    <div style="background: #fff3e0; padding: 15px; border: 1px solid #ff9800; margin: 20px 0;">
+        <h3>Test Actions</h3>
+        <p>Use the development login to set proper session values:</p>
+        <form method="post" action="@Url.Action("DevLogin", "Home")" style="margin: 10px 0;">
+            <input type="hidden" name="returnUrl" value="@Url.Action("DebugUser")" />
+            <label>Name: <input type="text" name="name" value="Test User" style="margin-left: 10px;" /></label><br /><br />
+            <label>Email: <input type="email" name="email" value="test.user@example.com" style="margin-left: 10px;" /></label><br /><br />
+            <button type="submit" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px;">Set Test User</button>
+        </form>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <a href="@Url.Action("FamilyPortal")" style="color: #007bff;">Back to Family Portal</a>
+    </div>
+</div>

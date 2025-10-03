@@ -47,6 +47,10 @@
             IsAuthenticated: @ViewBag.IsAuthenticated<br />
             UserName: @ViewBag.UserName<br />
             UserEmail: @ViewBag.UserEmail<br />
+            User.Identity.IsAuthenticated: @User.Identity.IsAuthenticated<br />
+            User.Identity.Name: @User.Identity.Name<br />
+            Session UserName: @Session["UserName"]<br />
+            Session UserEmail: @Session["UserEmail"]<br />
             FromFLWINS: @ViewBag.FromFLWINS<br />
             IsNewAccount: @ViewBag.IsNewAccount<br />
         </div>
