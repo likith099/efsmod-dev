@@ -243,3 +243,6 @@ _Pvt_Extensions
 .idea/
 *.sln.iml
 
+# Configuration files with secrets
+aspnet-get-started/Web.config
+
