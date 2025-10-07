@@ -47,12 +47,68 @@
             <hr style="margin: 20px 0;" />
         }
         
-        <!-- Production Login Options -->
-        <div class="production-login-section">
-            <a href="@Url.Action("AzureLogin", "Home")" class="create-app-btn microsoft-login">
-                <span class="microsoft-icon">🟦</span>
-                Sign in with Microsoft
-            </a>
+        <!-- Login Options -->
+        <div class="login-options-section">
+            <h3>Choose Sign-in Method</h3>
+            
+            <!-- Self Sign-up Option -->
+            <div class="login-option">
+                <button id="selfSignUpBtn" class="option-btn self-signup-btn">
+                    <span class="option-icon">👤</span>
+                    <div class="option-text">
+                        <strong>Self Sign-up</strong>
+                        <small>Create your own account with email verification</small>
+                    </div>
+                </button>
+            </div>
+            
+            <!-- FLWINS OIDC Option -->
+            <div class="login-option">
+                <a href="@Url.Action("FlwinsLogin", "Home")" class="option-btn flwins-login-btn">
+                    <span class="option-icon">🏢</span>
+                    <div class="option-text">
+                        <strong>FLWINS OIDC</strong>
+                        <small>Sign in through FLWINS Identity Provider</small>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Second OIDC Option -->
+            <div class="login-option">
+                <a href="@Url.Action("SecondOidcLogin", "Home")" class="option-btn second-oidc-login-btn">
+                    <span class="option-icon">🔐</span>
+                    <div class="option-text">
+                        <strong>Azure AD OIDC</strong>
+                        <small>Sign in through Azure Active Directory</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Self Sign-up Form (Initially Hidden) -->
+        <div id="selfSignUpForm" class="self-signup-form" style="display: none;">
+            <h4>Create Your Account</h4>
+            <form id="signUpForm" method="post" action="@Url.Action("SelfSignUp", "Home")">
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" class="form-control" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" name="firstName" class="form-control" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" name="lastName" class="form-control" required />
+                </div>
+                
+                <button type="submit" class="create-app-btn">Send Verification Code</button>
+                <button type="button" id="backToOptions" class="back-btn">Back to Options</button>
+            </form>
         </div>
         
         <a href="@Url.Action("Index", "Home")" class="back-link">Back to Home</a>
@@ -111,7 +167,135 @@
         justify-content: center;
     }
     
-    .microsoft-icon {
-        margin-right: 8px;
+    .login-options-section {
+        margin: 20px 0;
+    }
+    
+    .login-options-section h3 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    
+    .login-option {
+        margin-bottom: 15px;
+    }
+    
+    .option-btn {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        background: white;
+        text-decoration: none;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .option-btn:hover {
+        border-color: #007bff;
+        background: #f8f9fa;
+        text-decoration: none;
+        color: #333;
+    }
+    
+    .option-icon {
+        font-size: 24px;
+        margin-right: 15px;
+        width: 40px;
+        text-align: center;
+    }
+    
+    .option-text {
+        flex: 1;
+        text-align: left;
+    }
+    
+    .option-text strong {
+        display: block;
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+    
+    .option-text small {
+        color: #666;
+        font-size: 13px;
+    }
+    
+    .self-signup-btn {
+        border-color: #28a745;
+    }
+    
+    .self-signup-btn:hover {
+        border-color: #28a745;
+        background: #f8fff9;
+    }
+    
+    .flwins-login-btn {
+        border-color: #007bff;
+    }
+    
+    .flwins-login-btn:hover {
+        border-color: #007bff;
+        background: #f8f9ff;
+    }
+    
+    .second-oidc-login-btn {
+        border-color: #8b5cf6;
+    }
+    
+    .second-oidc-login-btn:hover {
+        border-color: #8b5cf6;
+        background: #faf5ff;
+    }
+    
+    .self-signup-form {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    .self-signup-form h4 {
+        margin-bottom: 20px;
+        color: #333;
+        text-align: center;
+    }
+    
+    .back-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    
+    .back-btn:hover {
+        background: #5a6268;
     }
 </style>
+    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selfSignUpBtn = document.getElementById('selfSignUpBtn');
+        const selfSignUpForm = document.getElementById('selfSignUpForm');
+        const backToOptions = document.getElementById('backToOptions');
+        const loginOptions = document.querySelector('.login-options-section');
+        
+        selfSignUpBtn.addEventListener('click', function() {
+            loginOptions.style.display = 'none';
+            selfSignUpForm.style.display = 'block';
+        });
+        
+        backToOptions.addEventListener('click', function() {
+            selfSignUpForm.style.display = 'none';
+            loginOptions.style.display = 'block';
+        });
+    });
+</script>

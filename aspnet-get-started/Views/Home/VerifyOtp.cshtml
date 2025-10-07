@@ -1,0 +1,164 @@
+@{
+    ViewBag.Title = "Verify Email - EFSM";
+    Layout = "~/Views/Shared/_FamilyPortalLayout.cshtml";
+}
+
+<div class="login-container">
+    <div class="login-card">
+        <h1>Verify Your Email</h1>
+        <p>We've sent a verification code to <strong>@ViewBag.Email</strong></p>
+        
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <div class="error-message">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+        
+        @if (ViewBag.OtpForDevelopment != null)
+        {
+            <div class="dev-info">
+                <strong>Development Mode:</strong> Your OTP is <span class="otp-code">@ViewBag.OtpForDevelopment</span>
+            </div>
+        }
+        
+        <form method="post" action="@Url.Action("VerifyOtp", "Home")">
+            <div class="form-group">
+                <label for="otp">Enter Verification Code:</label>
+                <input type="text" id="otp" name="otp" class="form-control otp-input" maxlength="6" placeholder="000000" required />
+                <small class="form-text">Enter the 6-digit code sent to your email</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Create Password:</label>
+                <input type="password" id="password" name="password" class="form-control" minlength="6" required />
+                <small class="form-text">Password must be at least 6 characters long</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" minlength="6" required />
+            </div>
+            
+            <button type="submit" class="create-app-btn">Complete Registration</button>
+        </form>
+        
+        <div class="additional-options">
+            <a href="@Url.Action("Login", "Home")" class="back-link">Back to Login</a>
+            <button id="resendOtp" class="resend-btn">Resend Code</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .dev-info {
+        background: #d4edda;
+        color: #155724;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .otp-code {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        font-size: 18px;
+        background: #fff;
+        padding: 2px 6px;
+        border-radius: 3px;
+        border: 1px solid #ccc;
+    }
+    
+    .otp-input {
+        font-family: 'Courier New', monospace;
+        font-size: 18px;
+        text-align: center;
+        letter-spacing: 4px;
+    }
+    
+    .form-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+        display: block;
+    }
+    
+    .additional-options {
+        margin-top: 20px;
+        text-align: center;
+    }
+    
+    .resend-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-left: 15px;
+        font-size: 14px;
+    }
+    
+    .resend-btn:hover {
+        background: #5a6268;
+    }
+    
+    .resend-btn:disabled {
+        background: #e9ecef;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+    
+    .countdown {
+        font-size: 12px;
+        color: #666;
+        margin-left: 10px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const otpInput = document.getElementById('otp');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const resendBtn = document.getElementById('resendOtp');
+        
+        // Auto-focus OTP input
+        otpInput.focus();
+        
+        // Only allow numbers in OTP input
+        otpInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+        
+        // Password confirmation validation
+        function validatePasswords() {
+            if (passwordInput.value && confirmPasswordInput.value) {
+                if (passwordInput.value !== confirmPasswordInput.value) {
+                    confirmPasswordInput.setCustomValidity('Passwords do not match');
+                } else {
+                    confirmPasswordInput.setCustomValidity('');
+                }
+            }
+        }
+        
+        passwordInput.addEventListener('input', validatePasswords);
+        confirmPasswordInput.addEventListener('input', validatePasswords);
+        
+        // Resend OTP functionality (implement as needed)
+        resendBtn.addEventListener('click', function() {
+            // TODO: Implement resend OTP functionality
+            alert('Resend OTP functionality to be implemented');
+        });
+    });
+</script>

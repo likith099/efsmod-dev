@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -18,6 +19,17 @@ namespace aspnet_get_started.Controllers
         /// </summary>
         private bool IsUserAuthenticated()
         {
+            // Debug logging for localhost
+            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            {
+                var sessionAuth = Session["IsAuthenticated"];
+                var sessionAuthBool = sessionAuth != null && (bool)sessionAuth;
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] IsUserAuthenticated - Session IsAuthenticated: {sessionAuth}, Bool value: {sessionAuthBool}");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] User.Identity.IsAuthenticated: {User.Identity.IsAuthenticated}");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Session UserName: {Session["UserName"]}");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Session UserEmail: {Session["UserEmail"]}");
+            }
+            
             // Check standard ASP.NET authentication
             if (User.Identity.IsAuthenticated)
                 return true;
@@ -206,9 +218,21 @@ namespace aspnet_get_started.Controllers
 
         public ActionResult FamilyPortal()
         {
+            // Debug logging for localhost
+            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] FamilyPortal - Checking authentication");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] FamilyPortal - IsUserAuthenticated result: {IsUserAuthenticated()}");
+            }
+            
             // Check if user is authenticated
             if (!IsUserAuthenticated())
             {
+                // Debug logging for localhost
+                if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+                {
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] FamilyPortal - User not authenticated, redirecting to Login");
+                }
                 // User is not authenticated, redirect to login
                 var returnUrl = Request.Url.ToString();
                 return RedirectToAction("Login", new { returnUrl = returnUrl });
@@ -762,15 +786,491 @@ namespace aspnet_get_started.Controllers
         }
         
         /// <summary>
-        /// Azure AD login redirect
+        /// FLWINS OIDC login redirect
         /// </summary>
-        public ActionResult AzureLogin()
+        public ActionResult FlwinsLogin()
         {
             var returnUrl = Request.QueryString["returnUrl"] ?? Url.Action("FamilyPortal", "Home", null, Request.Url.Scheme);
             
-            // Production: Redirect to Azure AD login via App Service Easy Auth
-            var loginUrl = $"/.auth/login/aad?post_login_redirect_url={Uri.EscapeDataString(returnUrl)}";
-            return Redirect(loginUrl);
+            // FLWINS CIAM configuration
+            var tenantId = System.Configuration.ConfigurationManager.AppSettings["TenantId"];
+            var clientId = System.Configuration.ConfigurationManager.AppSettings["ClientId"];
+            
+            // FLWINS uses different redirect URI structure
+            var redirectUri = "https://flwins-dev-dshjczeyf7dxeqdz.canadacentral-01.azurewebsites.net/.auth/login/aad/callback";
+            
+            // For local development, we need to handle this differently
+            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            {
+                // For localhost, we'll redirect to the production FLWINS flow
+                // but with a different return URL handling
+                redirectUri = ConfigurationManager.AppSettings["LocalRedirectUri"] ?? $"{Request.Url.Scheme}://{Request.Url.Authority}/signin-oidc";
+            }
+            
+            // Create state parameter with return URL
+            var stateParam = $"redir={Uri.EscapeDataString(returnUrl)}";
+            var nonce = Guid.NewGuid().ToString("N") + "_" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            
+            // Store state and nonce in session for validation
+            Session["oauth_state"] = stateParam;
+            Session["oauth_nonce"] = nonce;
+            Session["auth_method"] = "flwins_oidc";
+            Session["original_return_url"] = returnUrl;
+            
+            // Build FLWINS CIAM authorization URL
+            var authUrl = $"https://flwins.ciamlogin.com/{tenantId}/oauth2/v2.0/authorize?" +
+                         $"response_type=code+id_token&" +
+                         $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
+                         $"client_id={clientId}&" +
+                         $"scope=openid+profile+email&" +
+                         $"response_mode=form_post&" +
+                         $"nonce={nonce}&" +
+                         $"state={Uri.EscapeDataString(stateParam)}";
+            
+            return Redirect(authUrl);
+        }
+        
+        /// <summary>
+        /// Second OIDC Login - Azure AD OIDC
+        /// </summary>
+        public ActionResult SecondOidcLogin()
+        {
+            var returnUrl = Request.QueryString["returnUrl"] ?? Url.Action("FamilyPortal", "Home", null, Request.Url.Scheme);
+            
+            // Second OIDC configuration - You'll need to add these to Web.config
+            var tenantId = System.Configuration.ConfigurationManager.AppSettings["SecondOidcTenantId"] ?? System.Configuration.ConfigurationManager.AppSettings["TenantId"];
+            var clientId = System.Configuration.ConfigurationManager.AppSettings["SecondOidcClientId"] ?? System.Configuration.ConfigurationManager.AppSettings["ClientId"];
+            
+            // Standard Azure AD redirect URI
+            var redirectUri = $"{Request.Url.Scheme}://{Request.Url.Authority}/signin-oidc";
+            
+            // For production, you might want a different redirect URI
+            if (!Request.Url.Host.Contains("localhost") && !Request.Url.Host.Contains("127.0.0.1"))
+            {
+                // Use production redirect URI if configured
+                redirectUri = System.Configuration.ConfigurationManager.AppSettings["SecondOidcRedirectUri"] ?? redirectUri;
+            }
+            
+            // Create state parameter with return URL
+            var stateParam = $"redir={Uri.EscapeDataString(returnUrl)}";
+            var nonce = Guid.NewGuid().ToString("N") + "_" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            
+            // Store state and nonce in session for validation
+            Session["oauth_state"] = stateParam;
+            Session["oauth_nonce"] = nonce;
+            Session["auth_method"] = "second_oidc";
+            Session["original_return_url"] = returnUrl;
+            
+            // Build standard Azure AD authorization URL
+            var authUrl = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/authorize?" +
+                         $"response_type=code+id_token&" +
+                         $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
+                         $"client_id={clientId}&" +
+                         $"scope=openid+profile+email&" +
+                         $"response_mode=form_post&" +
+                         $"nonce={nonce}&" +
+                         $"state={Uri.EscapeDataString(stateParam)}";
+            
+            // Debug logging for localhost
+            if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] SecondOidcLogin - Auth URL: {authUrl}");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] SecondOidcLogin - Redirect URI: {redirectUri}");
+            }
+            
+            return Redirect(authUrl);
+        }
+        
+        /// <summary>
+        /// Self sign-up - Step 1: Collect user info and send OTP
+        /// </summary>
+        [HttpPost]
+        public ActionResult SelfSignUp(string email, string firstName, string lastName, string returnUrl)
+        {
+            try
+            {
+                // Validate input
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+                {
+                    ViewBag.ErrorMessage = "All fields are required.";
+                    return View("Login");
+                }
+                
+                // Check if email is already registered (optional check)
+                // You might want to check against your user database here
+                
+                // Generate OTP
+                var otp = new Random().Next(100000, 999999).ToString();
+                
+                // Store user registration data in session
+                Session["registration_email"] = email;
+                Session["registration_firstName"] = firstName;
+                Session["registration_lastName"] = lastName;
+                Session["registration_otp"] = otp;
+                Session["registration_otp_expiry"] = DateTime.Now.AddMinutes(15); // OTP expires in 15 minutes
+                Session["registration_returnUrl"] = returnUrl;
+                
+                // TODO: Send OTP via email (implement email service)
+                // For development, we'll just display it
+                if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+                {
+                    ViewBag.OtpForDevelopment = otp; // Show OTP in development
+                }
+                
+                // Send email with OTP (you'll need to implement this)
+                SendOtpEmail(email, firstName, otp);
+                
+                ViewBag.Email = email;
+                ViewBag.FirstName = firstName;
+                return View("VerifyOtp");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = $"Registration failed: {ex.Message}";
+                return View("Login");
+            }
+        }
+        
+        /// <summary>
+        /// Self sign-up - Step 2: Verify OTP and set password
+        /// </summary>
+        [HttpPost]
+        public ActionResult VerifyOtp(string otp, string password, string confirmPassword)
+        {
+            try
+            {
+                // Validate OTP
+                var sessionOtp = Session["registration_otp"]?.ToString();
+                var otpExpiry = Session["registration_otp_expiry"] as DateTime?;
+                
+                if (string.IsNullOrEmpty(sessionOtp) || otpExpiry == null)
+                {
+                    ViewBag.ErrorMessage = "Registration session expired. Please start again.";
+                    return View("Login");
+                }
+                
+                if (DateTime.Now > otpExpiry)
+                {
+                    ViewBag.ErrorMessage = "OTP has expired. Please request a new one.";
+                    return View("Login");
+                }
+                
+                if (otp != sessionOtp)
+                {
+                    ViewBag.ErrorMessage = "Invalid OTP. Please check and try again.";
+                    ViewBag.Email = Session["registration_email"];
+                    ViewBag.FirstName = Session["registration_firstName"];
+                    return View("VerifyOtp");
+                }
+                
+                // Validate password
+                if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+                {
+                    ViewBag.ErrorMessage = "Password must be at least 6 characters long.";
+                    ViewBag.Email = Session["registration_email"];
+                    ViewBag.FirstName = Session["registration_firstName"];
+                    return View("VerifyOtp");
+                }
+                
+                if (password != confirmPassword)
+                {
+                    ViewBag.ErrorMessage = "Passwords do not match.";
+                    ViewBag.Email = Session["registration_email"];
+                    ViewBag.FirstName = Session["registration_firstName"];
+                    return View("VerifyOtp");
+                }
+                
+                // Create user account (store in database - implement as needed)
+                var email = Session["registration_email"].ToString();
+                var firstName = Session["registration_firstName"].ToString();
+                var lastName = Session["registration_lastName"].ToString();
+                
+                // TODO: Hash password and store user in database
+                // For now, we'll just set up the session
+                
+                // Set authentication session
+                Session["IsAuthenticated"] = true;
+                Session["UserName"] = $"{firstName} {lastName}";
+                Session["UserEmail"] = email;
+                Session["AuthMethod"] = "self_signup";
+                
+                // Debug logging for localhost
+                if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+                {
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] VerifyOtp - Setting session - IsAuthenticated: {Session["IsAuthenticated"]}");
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] VerifyOtp - UserName: {Session["UserName"]}");
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] VerifyOtp - UserEmail: {Session["UserEmail"]}");
+                }
+                
+                // Clear registration session data
+                Session.Remove("registration_email");
+                Session.Remove("registration_firstName");
+                Session.Remove("registration_lastName");
+                Session.Remove("registration_otp");
+                Session.Remove("registration_otp_expiry");
+                
+                // Redirect to return URL or Family Portal
+                var returnUrl = Session["registration_returnUrl"]?.ToString();
+                Session.Remove("registration_returnUrl");
+                
+                if (string.IsNullOrEmpty(returnUrl) || returnUrl.Contains("Login"))
+                {
+                    returnUrl = Url.Action("FamilyPortal", "Home");
+                }
+                
+                // Debug logging for localhost
+                if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+                {
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] VerifyOtp - Redirecting to: {returnUrl}");
+                }
+                
+                return Redirect(returnUrl);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = $"Verification failed: {ex.Message}";
+                return View("VerifyOtp");
+            }
+        }
+        
+        /// <summary>
+        /// Helper method to send OTP via email (implement with your email service)
+        /// </summary>
+        private void SendOtpEmail(string email, string firstName, string otp)
+        {
+            try
+            {
+                // TODO: Implement actual email sending
+                // For now, just log or use a development email service
+                
+                // Example implementation using SMTP (configure in Web.config)
+                /*
+                var smtpClient = new SmtpClient();
+                var mailMessage = new MailMessage
+                {
+                    From = new MailAddress("noreply@yourapp.com"),
+                    Subject = "Your Verification Code",
+                    Body = $"Hi {firstName},\n\nYour verification code is: {otp}\n\nThis code will expire in 15 minutes.\n\nBest regards,\nYour App Team",
+                    IsBodyHtml = false
+                };
+                mailMessage.To.Add(email);
+                smtpClient.Send(mailMessage);
+                */
+                
+                // For development, you might want to log the OTP
+                System.Diagnostics.Debug.WriteLine($"OTP for {email}: {otp}");
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't throw - email sending is not critical for the flow to continue
+                System.Diagnostics.Debug.WriteLine($"Failed to send OTP email: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// OIDC callback endpoint to handle authentication response
+        /// </summary>
+        public async Task<ActionResult> SigninOidc()
+        {
+            try
+            {
+                // FLWINS CIAM uses form_post, so check both form and query parameters
+                var code = Request.Form["code"] ?? Request.QueryString["code"];
+                var state = Request.Form["state"] ?? Request.QueryString["state"];
+                var error = Request.Form["error"] ?? Request.QueryString["error"];
+                var errorDescription = Request.Form["error_description"] ?? Request.QueryString["error_description"];
+                var idToken = Request.Form["id_token"] ?? Request.QueryString["id_token"];
+                
+                // Check for authentication errors
+                if (!string.IsNullOrEmpty(error))
+                {
+                    ViewBag.ErrorMessage = $"Authentication failed: {error}. {errorDescription}";
+                    return View("Login");
+                }
+                
+                // Validate state parameter
+                var expectedState = Session["oauth_state"]?.ToString();
+                if (string.IsNullOrEmpty(state) || state != expectedState)
+                {
+                    ViewBag.ErrorMessage = "Invalid state parameter. Possible CSRF attack.";
+                    return View("Login");
+                }
+                
+                // If we have an ID token directly (form_post response), we can process it immediately
+                if (!string.IsNullOrEmpty(idToken))
+                {
+                    // Direct ID token processing for FLWINS CIAM form_post response
+                    var userInfo = DecodeIdToken(idToken);
+                    if (userInfo != null)
+                    {
+                        // Set authentication session
+                        Session["IsAuthenticated"] = true;
+                        Session["UserName"] = userInfo.Name ?? userInfo.Email;
+                        Session["UserEmail"] = userInfo.Email;
+                        Session["IdToken"] = idToken;
+                        Session["AuthMethod"] = Session["auth_method"] ?? "flwins_oidc";
+                        
+                        // Extract return URL from state
+                        var returnUrl = Session["original_return_url"]?.ToString();
+                        if (string.IsNullOrEmpty(returnUrl) || returnUrl.Contains("Login"))
+                        {
+                            returnUrl = Url.Action("FamilyPortal", "Home");
+                        }
+                        
+                        return Redirect(returnUrl);
+                    }
+                }
+                
+                if (string.IsNullOrEmpty(code))
+                {
+                    ViewBag.ErrorMessage = "Authorization code not received.";
+                    return View("Login");
+                }
+                
+                // Exchange authorization code for tokens
+                var authMethod = Session["auth_method"]?.ToString() ?? "flwins_oidc";
+                
+                string tenantId, clientId, clientSecret, tokenEndpoint;
+                var redirectUri = $"{Request.Url.Scheme}://{Request.Url.Authority}/signin-oidc";
+                
+                // Configure based on authentication method
+                if (authMethod == "second_oidc")
+                {
+                    // Second OIDC provider configuration
+                    tenantId = System.Configuration.ConfigurationManager.AppSettings["SecondOidcTenantId"] ?? System.Configuration.ConfigurationManager.AppSettings["TenantId"];
+                    clientId = System.Configuration.ConfigurationManager.AppSettings["SecondOidcClientId"] ?? System.Configuration.ConfigurationManager.AppSettings["ClientId"];
+                    clientSecret = System.Configuration.ConfigurationManager.AppSettings["SecondOidcClientSecret"] ?? System.Configuration.ConfigurationManager.AppSettings["ClientSecret"];
+                    tokenEndpoint = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
+                    
+                    // Use second OIDC redirect URI if configured
+                    if (!Request.Url.Host.Contains("localhost") && !Request.Url.Host.Contains("127.0.0.1"))
+                    {
+                        redirectUri = System.Configuration.ConfigurationManager.AppSettings["SecondOidcRedirectUri"] ?? redirectUri;
+                    }
+                }
+                else
+                {
+                    // FLWINS OIDC configuration (default)
+                    tenantId = System.Configuration.ConfigurationManager.AppSettings["TenantId"];
+                    clientId = System.Configuration.ConfigurationManager.AppSettings["ClientId"];
+                    clientSecret = System.Configuration.ConfigurationManager.AppSettings["ClientSecret"];
+                    tokenEndpoint = $"https://flwins.ciamlogin.com/{tenantId}/oauth2/v2.0/token";
+                    
+                    // For local development, use localhost redirect for FLWINS
+                    if (Request.Url.Host.Contains("localhost") || Request.Url.Host == "127.0.0.1")
+                    {
+                        redirectUri = ConfigurationManager.AppSettings["LocalRedirectUri"] ?? redirectUri;
+                    }
+                }
+                
+                using (var httpClient = new HttpClient())
+                {
+                    var tokenRequest = new FormUrlEncodedContent(new[]
+                    {
+                        new KeyValuePair<string, string>("client_id", clientId),
+                        new KeyValuePair<string, string>("client_secret", clientSecret ?? ""),
+                        new KeyValuePair<string, string>("code", code),
+                        new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                        new KeyValuePair<string, string>("redirect_uri", redirectUri),
+                    });
+                    
+                    var tokenResponse = await httpClient.PostAsync(tokenEndpoint, tokenRequest);
+                    var tokenContent = await tokenResponse.Content.ReadAsStringAsync();
+                    
+                    if (!tokenResponse.IsSuccessStatusCode)
+                    {
+                        ViewBag.ErrorMessage = $"Token exchange failed: {tokenContent}";
+                        return View("Login");
+                    }
+                    
+                    dynamic tokenData = JsonConvert.DeserializeObject(tokenContent);
+                    var accessToken = (string)tokenData.access_token;
+                    var tokenIdToken = (string)tokenData.id_token;
+                    
+                    // Decode ID token to get user information
+                    var userInfo = DecodeIdToken(tokenIdToken);
+                    if (userInfo != null)
+                    {
+                        // Set authentication session
+                        Session["IsAuthenticated"] = true;
+                        Session["UserName"] = userInfo.Name ?? userInfo.Email;
+                        Session["UserEmail"] = userInfo.Email;
+                        Session["AccessToken"] = accessToken;
+                        Session["IdToken"] = tokenIdToken;
+                        Session["AuthMethod"] = Session["auth_method"] ?? "flwins_oidc";
+                        
+                        // Redirect to original return URL
+                        var returnUrl = Uri.UnescapeDataString(state);
+                        if (string.IsNullOrEmpty(returnUrl) || returnUrl == "/" || returnUrl.Contains("Login"))
+                        {
+                            returnUrl = Url.Action("FamilyPortal", "Home");
+                        }
+                        
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "Failed to decode user information from ID token.";
+                        return View("Login");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = $"Authentication error: {ex.Message}";
+                return View("Login");
+            }
+        }
+        
+        /// <summary>
+        /// Helper method to decode JWT ID token
+        /// </summary>
+        private dynamic DecodeIdToken(string idToken)
+        {
+            try
+            {
+                var parts = idToken.Split('.');
+                if (parts.Length != 3) return null;
+                
+                // Decode the payload (second part)
+                var payload = parts[1];
+                
+                // Add padding if necessary
+                switch (payload.Length % 4)
+                {
+                    case 2: payload += "=="; break;
+                    case 3: payload += "="; break;
+                }
+                
+                var jsonBytes = Convert.FromBase64String(payload.Replace('-', '+').Replace('_', '/'));
+                var json = Encoding.UTF8.GetString(jsonBytes);
+                var claims = JsonConvert.DeserializeObject<dynamic>(json);
+                
+                return new
+                {
+                    Name = (string)claims.name ?? (string)claims.given_name,
+                    Email = (string)claims.email ?? (string)claims.preferred_username,
+                    Subject = (string)claims.sub,
+                    Claims = claims
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Test method to verify signin-oidc route is working (for debugging)
+        /// </summary>
+        public ActionResult TestSigninRoute()
+        {
+            return Json(new { 
+                message = "signin-oidc route is working!", 
+                timestamp = DateTime.Now,
+                requestUrl = Request.Url.ToString(),
+                queryString = Request.QueryString.ToString()
+            }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -1007,8 +1507,15 @@ namespace aspnet_get_started.Controllers
             }
             else
             {
-                // Production: Redirect to Azure AD logout via App Service Easy Auth
-                var logoutUrl = "/.auth/logout?post_logout_redirect_url=" + Uri.EscapeDataString(Url.Action("Index", "Home", null, Request.Url.Scheme));
+                // Clear session data
+                Session.Clear();
+                Session.Abandon();
+                
+                // Production: Redirect to FLWINS CIAM logout
+                var tenantId = ConfigurationManager.AppSettings["TenantId"];
+                var postLogoutRedirectUri = Uri.EscapeDataString(Url.Action("Index", "Home", null, Request.Url.Scheme));
+                var logoutUrl = $"https://flwins.ciamlogin.com/{tenantId}/oauth2/v2.0/logout?post_logout_redirect_uri={postLogoutRedirectUri}";
+                
                 return Redirect(logoutUrl);
             }
         }

@@ -12,6 +12,19 @@
 			],
 			"problemMatcher": [],
 			"group": "build"
+		},
+		{
+			"label": "Start ASP.NET App with IIS Express",
+			"type": "shell",
+			"command": "iisexpress",
+			"args": [
+				"/path:aspnet-get-started",
+				"/port:44320",
+				"/systray:false"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
 		}
 	]
 }
